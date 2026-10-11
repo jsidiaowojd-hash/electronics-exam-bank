@@ -25,6 +25,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "questions"
 PROTOCOL_FALLBACK = "2024-11-05"
+SITE_URL = "https://jsidiaowojd-hash.github.io/electronics-exam-bank"
+
+
+def q_url(qid: str) -> str:
+    return f"{SITE_URL}/question/{qid}.html"
 
 
 def load_papers() -> dict[str, dict]:
@@ -51,6 +56,8 @@ def paper_title(paper: dict) -> str:
 
 def brief(paper: dict, q: dict) -> dict:
     return {
+        "question_id": q.get("id"),
+        "url": q_url(q.get("id", "")),
         "paper_slug": paper["slug"],
         "paper": paper_title(paper),
         "number": q["number"],
@@ -58,6 +65,7 @@ def brief(paper: dict, q: dict) -> dict:
         "section": q.get("section"),
         "stem": q["stem"][:300],
         "answer": q.get("answer"),
+        "difficulty": q.get("difficulty"),
         "tags": q.get("tags", []),
         "has_figure": bool(q.get("figures")),
         "confidence": q.get("confidence"),
@@ -132,6 +140,19 @@ def _find_paper(slug: str) -> dict | None:
 
 
 def tool_get_question(args: dict) -> dict:
+    qid = str(args.get("question_id") or "").strip()
+    if qid:
+        for paper in PAPERS.values():
+            for q in paper["questions"]:
+                if q.get("id") == qid:
+                    return {
+                        "paper": paper_title(paper),
+                        "slug": paper["slug"],
+                        "url": q_url(qid),
+                        "question": q,
+                        "note": "confidence 不为 high 时，答案或选项由 PDF 自动切分而来，请谨慎引用。",
+                    }
+        return {"error": f"没有这个题目 ID：{qid}"}
     paper = _find_paper(str(args.get("slug") or ""))
     if not paper:
         return {"error": "没找到这份试卷，先用 list_papers 看一下 slug"}
@@ -141,6 +162,7 @@ def tool_get_question(args: dict) -> dict:
             return {
                 "paper": paper_title(paper),
                 "slug": paper["slug"],
+                "url": q_url(q.get("id", "")),
                 "question": q,
                 "note": "confidence 不为 high 时，答案或选项可能由 PDF 自动切分而来，请谨慎引用。",
             }
@@ -207,14 +229,15 @@ TOOLS = [
     },
     {
         "name": "get_question",
-        "description": "取某份试卷某一道题的完整内容，含选项、答案、解析、配图。",
+        "description": "取某一道题的完整内容（选项、答案、解析、配图），并给出稳定的单题链接。"
+                       "既可以用题目 ID 精确取，也可以按试卷 slug + 题号取。",
         "inputSchema": {
             "type": "object",
             "properties": {
+                "question_id": {"type": "string", "description": "题目 ID，如 zsu-885-2024-p1-q11"},
                 "slug": {"type": "string", "description": "试卷标识，如 zsu-885-2024"},
                 "number": {"type": "integer", "description": "题号"},
             },
-            "required": ["slug", "number"],
         },
     },
     {

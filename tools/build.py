@@ -27,6 +27,11 @@ SITE_NAME = "数模电考研真题库"
 SITE_TAGLINE = "模拟电子技术 + 数字电子技术 考研真题、答案与解析"
 SITE_URL = "https://example.com"  # 部署后改成自己的域名，或用 --site-url / SITE_URL 环境变量覆盖
 
+
+def q_url(qid: str) -> str:
+    """稳定的单题地址：/question/<question_id>.html"""
+    return f"{SITE_URL}/question/{qid}.html"
+
 CSS = """
 :root{--bg:#f7f8fa;--card:#fff;--ink:#1c2128;--muted:#6b7683;--line:#e5e8ee;
 --brand:#2f6df6;--brand-soft:#eef3ff;--ok:#1a8a5a;--warn:#c47f00}
@@ -80,11 +85,48 @@ sub,sup{font-size:.72em}
 .mark{background:#fff3bf}
 footer{margin:50px 0 30px;color:var(--muted);font-size:13px;text-align:center}
 .toc{columns:2;font-size:14px}
+.qnav{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0;font-size:14px}
+.stars{color:#e8a33d;letter-spacing:2px}
+.progress b{display:block;margin-bottom:8px}
+.done-btn,.export-btn{margin:0 8px 8px 0;padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px;cursor:pointer}
+.done-btn.is-done{background:var(--brand-soft);border-color:#c7d7ff;color:#2b4bb5}
+.export-btn{background:#f7f8fa}
+.q-no{text-decoration:none}
+.pill.done-badge{background:#e6f6ec;color:#1a8a5a}
 @media (max-width:640px){.toc{columns:1}}
 .admon{background:#fff8e6;border:1px solid #f0dca8;border-radius:10px;padding:12px 14px;font-size:14px;color:#6a5320}
 """
 
 JS = """
+// ---- 做题进度：只存在浏览器本地，可导出为 JSON 贴给模型 ----
+const DONE_KEY = 'kaoyan-done-v1';
+function doneSet(){ try { return new Set(JSON.parse(localStorage.getItem(DONE_KEY) || '[]')); } catch(e){ return new Set(); } }
+function saveDone(s){ localStorage.setItem(DONE_KEY, JSON.stringify([...s])); }
+function paintDone(){
+  const s = doneSet();
+  document.querySelectorAll('[data-qid]').forEach(el=>{
+    const id = el.getAttribute('data-qid');
+    if (el.classList.contains('done-btn')) {
+      el.textContent = s.has(id) ? '✓ 已做（点击取消）' : '标记为已做';
+      el.classList.toggle('is-done', s.has(id));
+      return;
+    }
+    if (s.has(id) && !el.querySelector('.done-badge')) {
+      const b = document.createElement('span'); b.className = 'pill done-badge'; b.textContent = '✓ 已做';
+      (el.querySelector('.q-head') || el).appendChild(b);
+    }
+  });
+}
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('.done-btn');
+  if (btn) { const s = doneSet(); const id = btn.getAttribute('data-qid');
+    s.has(id) ? s.delete(id) : s.add(id); saveDone(s); paintDone(); return; }
+  const exp = e.target.closest('.export-btn');
+  if (exp) { const txt = JSON.stringify([...doneSet()], null, 1);
+    navigator.clipboard.writeText(txt).then(()=>{ exp.textContent = `已复制 ${JSON.parse(txt).length} 条`; },
+      ()=>{ window.prompt('复制下面的内容发给 ChatGPT：', txt); }); }
+});
+
 // 题库搜索：把 search-index.json 拉下来做前端检索
 async function initSearch(){
   const box=document.getElementById('q');
@@ -108,6 +150,7 @@ async function initSearch(){
   render('');
 }
 document.addEventListener('DOMContentLoaded',initSearch);
+document.addEventListener('DOMContentLoaded',paintDone);
 """
 
 
@@ -173,8 +216,11 @@ def paper_title(paper: dict) -> str:
 
 def question_html(q: dict, depth: int, slug: str) -> str:
     rel = "../" * depth
-    parts = ['<div class="q" id="q%s">' % q["number"]]
-    head = [f'<span class="q-no">{q["number"]}.</span>']
+    parts = ['<div class="q" id="%s" data-qid="%s">' % (q["id"], q["id"])]
+    head = [
+        f'<a class="q-no" href="{rel}question/{q["id"]}.html" '
+        f'title="这一题的独立链接">{q["number"]}.</a>'
+    ]
     if q.get("section"):
         head.append(f'<span class="pill">{esc(q["section"])}</span>')
     if q.get("part"):
@@ -224,6 +270,74 @@ def question_html(q: dict, depth: int, slug: str) -> str:
         parts.append("</div>")
     parts.append("</div>")
     return "".join(parts)
+
+
+def question_page(paper: dict, q: dict, prev_q: dict | None, next_q: dict | None) -> str:
+    """单题页面：稳定 URL /question/<id>.html，便于模型与搜索引擎单独引用。"""
+    title = f"{paper_title(paper)} 第 {q['number']} 题"
+    rel = "../"
+    bits = [esc(paper_title(paper))]
+    if q.get("section"):
+        bits.append(esc(q["section"]))
+    if q.get("difficulty_stars"):
+        bits.append(f'难度 <span class="stars">{esc(q["difficulty_stars"])}</span>')
+    else:
+        bits.append("难度未标注")
+    if q.get("tags"):
+        bits.append("知识点：" + "、".join(esc(t) for t in q["tags"]))
+
+    body = [
+        f'<h1>第 {q["number"]} 题</h1>',
+        '<p class="sub">' + " · ".join(bits) + "</p>",
+        '<div class="admon">题目 ID：<code>' + esc(q["id"]) + "</code> ｜ "
+        f'<a href="{rel}paper/{paper["slug"]}/index.html#{esc(q["id"])}">在整卷中查看</a> ｜ '
+        f'<a href="{rel}api/questions/{paper["slug"]}.json">这份卷子的 JSON</a></div>',
+        question_html({**q, "figures": q.get("figures", []), "answer_imgs": q.get("answer_imgs", [])}, 1, paper["slug"]),
+        '<div class="qnav">',
+    ]
+    if prev_q:
+        body.append(
+            f'<a href="{rel}question/{prev_q["id"]}.html">← 上一题（第 {prev_q["number"]} 题）</a>'
+        )
+    body.append(f'<a href="{rel}paper/{paper["slug"]}/index.html">回到整卷</a>')
+    if next_q:
+        body.append(
+            f'<a href="{rel}question/{next_q["id"]}.html">下一题（第 {next_q["number"]} 题）→</a>'
+        )
+    body.append("</div>")
+    body.append(
+        '<div class="card progress"><b>做题进度（只存在你这台设备上）</b>'
+        f'<button class="done-btn" data-qid="{esc(q["id"])}">标记为已做</button>'
+        '<button class="export-btn">复制我做过的题（JSON）</button>'
+        '<div class="meta">把复制出来的内容贴给 ChatGPT，它就知道哪些题你练过了。</div></div>'
+    )
+
+    desc = re.sub(r"\s+", " ", q.get("stem", ""))[:110]
+    if q.get("answer"):
+        desc += f' 答案：{q["answer"]}'
+    extra = (
+        f'<link rel="canonical" href="{q_url(q["id"])}">\n'
+        f'<meta property="og:type" content="article">\n'
+        f'<meta property="og:title" content="{esc(title)}">\n'
+        f'<meta property="og:description" content="{esc(desc)}">\n'
+        f'<script type="application/ld+json">{json.dumps(_quiz_ld(paper, q), ensure_ascii=False)}</script>'
+    )
+    return render_layout(title, "\n".join(body), 1, extra)
+
+
+def _quiz_ld(paper: dict, q: dict) -> dict:
+    ld = {
+        "@context": "https://schema.org",
+        "@type": "Question",
+        "name": f'{paper_title(paper)} 第 {q["number"]} 题',
+        "text": q.get("stem", ""),
+        "url": q_url(q["id"]),
+        "identifier": q["id"],
+        "about": [{"@type": "Thing", "name": t} for t in q.get("tags", [])],
+    }
+    if q.get("answer"):
+        ld["acceptedAnswer"] = {"@type": "Answer", "text": q["answer"]}
+    return ld
 
 
 def band_crop(site_dir: Path, paper: dict, q: dict) -> str | None:
@@ -329,7 +443,9 @@ def build(data_dir: Path, site_dir: Path) -> dict:
         toc = []
         for q in paper["questions"]:
             num = q["number"]
-            toc.append(f'<div><a href="#q{num}">{num}. {fmt_math(q["stem"][:38])}</a></div>')
+            toc.append(
+                f'<div><a href="#{q["id"]}">{num}. {fmt_math(q["stem"][:38])}</a></div>'
+            )
         if toc:
             body.append('<div class="card toc">' + "".join(toc) + "</div>")
         sections_seen = []
@@ -342,8 +458,10 @@ def build(data_dir: Path, site_dir: Path) -> dict:
             body.append(question_html(q, depth, slug))
             search_index.append(
                 {
-                    "url": f"paper/{slug}/index.html#q{q['number']}",
+                    "url": f"question/{q['id']}.html",
+                    "paper_url": f"paper/{slug}/index.html#{q['id']}",
                     "title": f"{title} 第 {q['number']} 题",
+                    "qid": q["id"],
                     "paper": title,
                     "slug": slug,
                     "number": q["number"],
@@ -352,13 +470,24 @@ def build(data_dir: Path, site_dir: Path) -> dict:
                              + " " + (q.get("answer") or "")),
                 }
             )
-            all_questions.append({"paper": title, "slug": slug, **q})
+            all_questions.append(
+                {"paper": title, "slug": slug, "question_url": q_url(q["id"]), **q}
+            )
             for tag in q.get("tags", []):
                 tag_map.setdefault(tag, []).append((slug, title, q))
         (site_dir / "paper" / slug).mkdir(parents=True, exist_ok=True)
         (site_dir / "paper" / slug / "index.html").write_text(
             render_layout(title, "\n".join(body), depth), encoding="utf-8"
         )
+        # 每道题生成一个独立页面
+        (site_dir / "question").mkdir(parents=True, exist_ok=True)
+        qs = paper["questions"]
+        for i, q in enumerate(qs):
+            prev_q = qs[i - 1] if i > 0 else None
+            next_q = qs[i + 1] if i + 1 < len(qs) else None
+            (site_dir / "question" / f"{q['id']}.html").write_text(
+                question_page(paper, q, prev_q, next_q), encoding="utf-8"
+            )
         cards.append(
             f'<a class="card" href="paper/{slug}/index.html"><h3>{esc(title)}</h3>'
             f'<div class="meta">{stats.get("total", 0)} 题 · 答案 {stats.get("with_answer", 0)} · '
@@ -533,7 +662,7 @@ def build(data_dir: Path, site_dir: Path) -> dict:
             )
             idx_md.append(
                 f"- {title} 第 {q['number']} 题（{meta}）：{brief_stem(q)} → "
-                f"{SITE_URL}/paper/{slug}/index.html#q{q['number']}"
+                f"{q_url(q['id'])}"
             )
             idx_json.append(
                 {
@@ -547,7 +676,9 @@ def build(data_dir: Path, site_dir: Path) -> dict:
                     "has_answer": bool(q.get("answer")),
                     "has_figure": bool(q.get("figures")),
                     "stem": brief_stem(q, 160),
-                    "url": f"{SITE_URL}/paper/{slug}/index.html#q{q['number']}",
+                    "url": q_url(q["id"]),
+                    "paper_url": f"{SITE_URL}/paper/{slug}/index.html#{q['id']}",
+                    "difficulty": q.get("difficulty"),
                 }
             )
         idx_md.append("")
@@ -583,6 +714,12 @@ def build(data_dir: Path, site_dir: Path) -> dict:
              "## 想让模型帮你挑题时先读这个", "",
              f"- 选题索引（只有题干要点+知识点，不含答案解析，最省 token）：{SITE_URL}/question-index.md",
              f"- 同上的 JSON 版本：{SITE_URL}/api/question-index.json", "",
+             "## 单题地址（AI 引用用这个）", "",
+             f"- 每题一个稳定地址：{SITE_URL}/question/<question_id>.html",
+             "  · 例：https://jsidiaowojd-hash.github.io/electronics-exam-bank/question/zsu-885-2024-p1-q11.html",
+             "- ID 规则：`<试卷 slug>-q<阿拉伯数字题号>`；卷内分「部分」时插一段 `p<部分序号>`；",
+             "  用「一、二、三」编号的大题标记为 `c<序号>`（例如 `zsu-885-2024-p1-c2` 是中大第一部分第 2 道大题）。",
+             "- 单题页里含题干、配图、选项、答案解析和原卷裁图，可直接作为引用来源。", "",
              "## 使用说明", "",
              "题目 JSON 字段：id / number / part / section / type / stem / options / figures / "
              "answer / explanation / tags / page / confidence。confidence 为 low 或 medium 表示"
@@ -610,6 +747,7 @@ def build(data_dir: Path, site_dir: Path) -> dict:
     urls += ["question-index.md", "api/question-index.json"]
     urls += [f"paper/{p['slug']}/index.html" for p in papers]
     urls += [f"paper/{p['slug']}/index.html" for p in browse_only]
+    urls += [f"question/{q['id']}.html" for p in papers for q in p["questions"]]
     urls += [f"tag/{tag_slug(t)}/index.html" for t in tag_map]
     sitemap = ['<?xml version="1.0" encoding="UTF-8"?>',
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']

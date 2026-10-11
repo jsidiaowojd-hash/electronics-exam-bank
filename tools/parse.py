@@ -260,6 +260,7 @@ def split_questions(paper: dict) -> dict:
                 }
                 expected_cn = cnum + 1
                 num_style = "cn"
+                current["num_style"] = "cn"
                 if not (m_cn.group(2) or "").strip():
                     current["stem_lines"] = []
                 continue
@@ -289,6 +290,7 @@ def split_questions(paper: dict) -> dict:
                 }
                 expected = num + 1
                 num_style = "digit"
+                current["num_style"] = "digit"
                 head = (m_q.group(2) or "").strip()
                 if head:
                     current["stem_lines"].append(head)
@@ -316,6 +318,7 @@ def split_questions(paper: dict) -> dict:
                 }
                 expected = 2
                 num_style = "digit"
+                current["num_style"] = "digit"
                 head = (m_q.group(2) or "").strip()
                 if head:
                     current["stem_lines"].append(head)
@@ -379,6 +382,33 @@ def split_questions(paper: dict) -> dict:
 
 
 def finalize(paper: dict, parsed: dict) -> dict:
+    # 题目 ID：<试卷>-q<题号>；一份卷子里有多个"部分"时插入 p<部分序号>，
+    # 否则「第1题」会在两部分里撞车（中大 885 就是这种情况）
+    part_order: dict[str, int] = {}
+    multi_part = False
+    for q in parsed["questions"]:
+        name = q.get("part") or ""
+        if not name:
+            continue
+        if name not in part_order:
+            part_order[name] = len(part_order) + 1
+    if len(part_order) > 1:
+        multi_part = True
+
+    used_ids: dict[str, int] = {}
+
+    def make_id(slug: str, q: dict) -> str:
+        pno = part_order.get(q.get("part") or "")
+        mark = "c" if q.get("num_style") == "cn" else "q"  # c=中文序号大题，q=阿拉伯数字题
+        base = f"{slug}-p{pno}-{mark}{q['number']}" if (multi_part and pno) else f"{slug}-{mark}{q['number']}"
+        if base in used_ids:
+            used_ids[base] += 1
+            return f"{base}{chr(ord('a') + used_ids[base] - 1)}"
+        used_ids[base] = 1
+        return base
+
+    diff_re = re.compile(r"难度\s*[:：]?\s*([★☆]{1,5})")
+
     out = {
         "slug": paper["slug"],
         "school": paper["school"],
@@ -407,7 +437,8 @@ def finalize(paper: dict, parsed: dict) -> dict:
         elif qtype == "other":
             qtype = "calc"  # 华科这类卷子：整卷都是大题
         item = {
-            "id": f"{paper['slug']}-{q['number']:02d}",
+            "id": make_id(paper["slug"], q),
+            "slug": paper["slug"],
             "number": q["number"],
             "part": q["part"],
             "section": q["section"],
@@ -433,6 +464,9 @@ def finalize(paper: dict, parsed: dict) -> dict:
         elif item["options"]:
             confidence = "medium"
         item["confidence"] = confidence
+        stars = diff_re.search(explanation or "")
+        item["difficulty"] = stars.group(1).count("★") if stars else None
+        item["difficulty_stars"] = stars.group(1) if stars else None
         out["questions"].append(item)
     out["stats"] = {
         "total": len(out["questions"]),
