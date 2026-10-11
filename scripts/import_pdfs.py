@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Render PDF exam archive; deduplicate identical bytes, keep variants, group by subject."""
 from __future__ import annotations
 import hashlib
@@ -69,10 +69,10 @@ def copy_site():
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
-    for n in ("index.html", "2021-hust-831.html", "original-practice.html"):
+    for n in ("index.html", "2021-hust-831.html", "original-practice.html", "labels.html"):
         if (ROOT / n).exists():
             shutil.copy2(ROOT / n, OUT / n)
-    for n in ("assets", "questions"):
+    for n in ("assets", "questions", "data"):
         if (ROOT / n).exists():
             shutil.copytree(ROOT / n, OUT / n, dirs_exist_ok=True)
     (OUT / "exams").mkdir(exist_ok=True)
@@ -214,3 +214,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
