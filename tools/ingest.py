@@ -95,12 +95,26 @@ def guess_meta(path: Path) -> dict:
 
 
 def make_slug(meta: dict, path: Path) -> str:
-    parts = [meta["school_slug"] or re.sub(r"[^a-z0-9]+", "", path.stem.lower())[:12] or "paper"]
+    parts = []
+    if meta["school_slug"]:
+        parts.append(meta["school_slug"])
     if meta["code"]:
         parts.append(str(meta["code"]))
     if meta["year"]:
         parts.append(str(meta["year"]))
+    if not parts:  # 文件名里什么线索都没有，退回到清洗后的文件名
+        parts = [re.sub(r"[^a-z0-9]+", "", path.stem.lower())[:16] or "paper"]
+    elif len(parts) == 1 and not meta["school_slug"]:
+        parts.insert(0, "exam")
     return "-".join(parts)
+
+
+def dedupe_key(name: str) -> str:
+    """去掉「(1)」「-1」这类副本标记后的归一化名字，用于识别同一个卷子的多份拷贝。"""
+    stem = Path(name).stem
+    stem = re.sub(r"[\s]*[\(（\[【]\s*\d{1,3}\s*[\)）\]】]\s*$", "", stem)
+    stem = re.sub(r"[\s]*[-_]\s*\d{1,2}\s*$", "", stem)
+    return re.sub(r"[\s\-_（）()]+", "", stem).lower()
 
 
 # ---------------------------------------------------------------- 文本清洗
@@ -462,16 +476,17 @@ def main() -> None:
     if args.pdf:
         targets += args.pdf
 
-    # 同名重复（例如 imports/ 里放了副本）只留一份
+    # 同一份卷子的多份拷贝（例如 xxx(1).pdf）只留一份
     seen_names: set[str] = set()
     deduped: list[Path] = []
-    for t in targets:
-        key = t.name.lower()
+    for t in sorted(targets, key=lambda p: len(p.name)):  # 优先保留名字干净的那份
+        key = dedupe_key(t.name)
         if key in seen_names:
+            print(f"[dup ] 跳过重复文件 {t.name}")
             continue
         seen_names.add(key)
         deduped.append(t)
-    targets = deduped
+    targets = sorted(deduped)
 
     # 教材等超大的 PDF 不入库
     targets = [t for t in targets if t.stat().st_size < 20_000_000]
