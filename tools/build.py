@@ -696,9 +696,82 @@ def build(data_dir: Path, site_dir: Path) -> dict:
                 }
             )
         idx_md.append("")
+    # 没打上知识点的题也要列出来，否则模型按索引挑题时会漏掉它们
+    tagged_ids = {q["id"] for entries in tag_map.values() for _s, _t, q in entries}
+    leftovers = [q for p in papers for q in p["questions"] if q["id"] not in tagged_ids]
+    if leftovers:
+        idx_md.append(f"### 未标注知识点（{len(leftovers)} 题）")
+        idx_md.append("")
+        for q in leftovers:
+            slug = q.get("slug") or q["id"].split("-q")[0]
+            meta = "，".join(
+                x
+                for x in [
+                    q.get("section") or q.get("type"),
+                    "有答案" if q.get("answer") else "无答案",
+                    f'难度{q["difficulty_stars"]}' if q.get("difficulty_stars") else "难度未标注",
+                ]
+                if x
+            )
+            idx_md.append(
+                f"- [{q['id']}] {q['id'].split('-q')[0]} 第 {q['number']} 题（{meta}）："
+                f"{brief_stem(q)} → {q_url(q['id'])}"
+            )
+            idx_json.append(
+                {
+                    "id": q["id"],
+                    "paper": "",
+                    "slug": slug,
+                    "number": q["number"],
+                    "type": q.get("type"),
+                    "section": q.get("section"),
+                    "tags": [],
+                    "has_answer": bool(q.get("answer")),
+                    "has_figure": bool(q.get("figures")),
+                    "stem": brief_stem(q, 160),
+                    "url": q_url(q["id"]),
+                    "difficulty": q.get("difficulty"),
+                }
+            )
+        idx_md.append("")
+        for slug, title, q in entries:
+            meta = "，".join(
+                x
+                for x in [
+                    q.get("section") or q.get("type"),
+                    "有答案" if q.get("answer") else "无答案",
+                    f'难度{q["difficulty_stars"]}' if q.get("difficulty_stars") else "难度未标注",
+                ]
+                if x
+            )
+            idx_md.append(
+                f"- [{q['id']}] {title} 第 {q['number']} 题（{meta}）：{brief_stem(q)} → "
+                f"{q_url(q['id'])}"
+            )
+            idx_json.append(
+                {
+                    "id": q["id"],
+                    "paper": title,
+                    "slug": slug,
+                    "number": q["number"],
+                    "type": q.get("type"),
+                    "section": q.get("section"),
+                    "tags": q.get("tags", []),
+                    "has_answer": bool(q.get("answer")),
+                    "has_figure": bool(q.get("figures")),
+                    "stem": brief_stem(q, 160),
+                    "url": q_url(q["id"]),
+                    "paper_url": f"{SITE_URL}/paper/{slug}/index.html#{q['id']}",
+                    "difficulty": q.get("difficulty"),
+                }
+            )
+        idx_md.append("")
     (site_dir / "question-index.md").write_text("\n".join(idx_md), encoding="utf-8")
+    # JSON 版按题目去重（一道题带多个标签时会在多个分组里出现，JSON 里只留一条）
+    seen_ids: set[str] = set()
+    deduped = [it for it in idx_json if not (it["id"] in seen_ids or seen_ids.add(it["id"]))]
     (api / "question-index.json").write_text(
-        json.dumps({"site": SITE_NAME, "count": len(idx_json), "questions": idx_json},
+        json.dumps({"site": SITE_NAME, "count": len(deduped), "questions": deduped},
                    ensure_ascii=False, indent=1),
         encoding="utf-8",
     )
