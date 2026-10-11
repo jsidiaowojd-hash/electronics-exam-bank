@@ -38,7 +38,7 @@ def category(name):
     if "广工" in s or "广东工业" in s:
         return "广东工业大学 · 849" if "849" in s else "广东工业大学 · 待确认科目"
     if re.search(r"885", s):
-        return "885 · 院校待核验"
+        return "885 回忆资料 · 原件未注明院校"
     if re.search(r"\b8(?:60|61|62|63|65|07|08|12|13)\b", s) or re.search(r"(860|861|862|863|865|907|908|912|913)", s):
         return "其他院校 · 电子技术（待核验）"
     return "其他资料 · 待分类"
@@ -91,6 +91,20 @@ h1{line-height:1.35;margin:0 0 10px;font-size:30px}h2{font-size:22px;margin-top:
 .sheet img{width:100%;height:auto;display:block}.sheet figcaption{font-weight:600;font-size:14px;color:#50657e;margin-bottom:8px}
 details{background:white;margin:14px 0;border:1px solid #dce4ee;border-radius:10px;padding:12px}summary{cursor:pointer;font-weight:700;color:#1b55a5}
 @media(max-width:650px){h1{font-size:24px}.top{padding:17px}.container{margin:10px auto}}
+
+/* Sticky two-column reader */
+.layout{max-width:1390px;margin:24px auto;padding:0 16px;display:grid;grid-template-columns:248px minmax(0,1fr);gap:22px;align-items:start}
+.nav{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow-y:auto;background:white;border:1px solid #dce4ee;border-radius:12px;padding:15px 12px;scrollbar-width:thin}
+.nav .brand{font-weight:800;color:#274d7c;display:block;padding:3px 9px 12px;border-bottom:1px solid #e5eaf2}
+.nav summary{font-size:14px;color:#365879;cursor:pointer;font-weight:700;padding:8px;list-style:auto}
+.nav details{padding:0;margin:6px 0;border:none;background:transparent}
+.nav a{display:block;padding:7px 10px;color:#4e6581;font-size:13px;border-radius:6px;overflow-wrap:anywhere;line-height:1.5}
+.nav a:hover,.nav a:focus{background:#eaf2ff;text-decoration:none;color:#1c54aa}
+.nav .short{font-size:12px;color:#65768c;padding:0 9px}
+.reading{min-width:0;max-width:1000px}.reading>.top{margin-top:0}
+.jump{scroll-margin-top:18px}.nav-toggle{display:none}
+.group>h2{scroll-margin-top:20px}
+@media(max-width:850px){.layout{display:block;padding:10px}.nav{position:static;max-height:360px;margin-bottom:15px}.nav-toggle{display:block;background:#eaf2ff;border:1px solid #cbdcf7;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700;width:100%;text-align:left}.nav[data-collapsed="1"] .nav-content{display:none}.reading{max-width:none}.nav a{display:inline-block;margin-right:8px}}
 """
 def header(title):
     return f'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(title)}｜电子技术真题</title><style>{CSS}</style></head><body><div class="container">'
@@ -99,6 +113,7 @@ def render(pdf, item):
     target = OUT / "exams" / item["slug"]
     target.mkdir(parents=True)
     parts = []
+    nav_pages = []
     with fitz.open(pdf) as doc:
         total = len(doc)
         if total < 1:
@@ -119,15 +134,24 @@ def render(pdf, item):
             label = ("原题" if split is not None and pno <= int(split) else
                      "参考解析" if split is not None else "原卷页面")
             block = f'<figure class="sheet"><figcaption>第 {pno} 页 · {label}</figcaption><a href="{image}" target="_blank" rel="noopener"><img loading="lazy" src="{image}" alt="{esc(item["title"])} 第{pno}页"></a></figure>'
+            anchor = f"page-{pno}"
+            block = block.replace('<figure class="sheet">', f'<figure class="sheet jump" id="{anchor}">', 1)
             if label == "参考解析":
-                block = f'<details><summary>展开第 {pno} 页参考解析</summary>{block}</details>'
+                block = f'<details class="jump" id="{anchor}"><summary>第 {pno} 页 · 展开参考解析</summary>{block}</details>'
+                block = block.replace(f'<figure class="sheet jump" id="{anchor}">', '<figure class="sheet">', 1)
+            nav_pages.append(f'<a href="#{anchor}">第 {pno:02d} 页 · {label}</a>')
             parts.append(block)
     item["pages"] = total
-    (target / "index.html").write_text(header(item["title"])+
-        f'<p><a href="../index.html">← 返回全部试卷</a></p><div class="top"><h1>{esc(item["title"])}</h1>'
+    nav = ('<aside class="nav" data-collapsed="0"><button class="nav-toggle" type="button" '
+           'onclick="this.parentNode.dataset.collapsed=this.parentNode.dataset.collapsed===&#39;1&#39;?&#39;0&#39;:&#39;1&#39;">☰ 展开／收起页码导航</button>'
+           '<div class="nav-content"><a class="brand" href="../index.html">← 全部真题</a>'
+           '<div class="short">当前试卷 · 点击页码定位</div>' + ''.join(nav_pages) + '</div></aside>')
+    content = (f'<div class="top"><h1>{esc(item["title"])}</h1>'
         f'<p class="muted">{esc(item["category"])} · {total} 页</p>'
-        '<p class="note">原 PDF 按页展示，保留电路图与公式。未确认题目／答案分界时不擅自标注答案；点击图片可放大。</p></div>'
-        +''.join(parts)+'</div></body></html>', encoding="utf-8")
+        '<p class="note">右侧是原卷图片；左侧固定页码导航。参考解析按页折叠；图片可以放大。未确认分界的PDF不擅自区分答案。</p></div>'
+        + ''.join(parts))
+    (target / "index.html").write_text(header(item["title"])+
+        '<div class="layout">'+nav+'<main class="reading">'+content+'</main></div></div></body></html>', encoding="utf-8")
 
 def main():
     copy_site()
@@ -163,15 +187,24 @@ def main():
         groups[it["category"]].append(it)
     priority = {"中山大学 · 885":0,"华中科技大学 · 831":1,"中科院 · 856":2,"西安邮电大学 · 823":3,"广东工业大学 · 849":4}
     chunks = []
-    for cat in sorted(groups,key=lambda k:(priority.get(k,9),k)):
+    side_links = []
+    for idx,cat in enumerate(sorted(groups,key=lambda k:(priority.get(k,9),k))):
+        section_id = f"category-{idx}"
+        side_links.append(f'<a href="#{section_id}">{esc(cat)}（{len(groups[cat])}）</a>')
         rows=[]
         for item in groups[cat]:
             when=f'{item["year"]} 年' if item["year"] else "年份待核对"
             rows.append(f'<article class="row" data-search="{esc(item["title"]+" "+cat+" "+when).lower()}"><div class="name"><a href="{esc(item["slug"])}/index.html">{esc(item["title"])}</a></div><div class="meta"><span class="chip">{when}</span><span class="chip">{item["pages"]} 页</span><span class="chip">PDF 原始图</span></div></article>')
-        chunks.append(f'<section class="group"><h2>{esc(cat)} <small class="muted">（{len(rows)} 份）</small></h2>{"".join(rows)}</section>')
+        chunks.append(f'<section class="group" id="{section_id}"><h2>{esc(cat)} <small class="muted">（{len(rows)} 份）</small></h2>{"".join(rows)}</section>')
     notes=f'共收录 {len(items)} 份不同内容的 PDF，自动去重 {len(dupes)} 份相同内容的重复上传。名称相似但文件内容不同的版本均予以保留。'
     search='<input class="search" id="q" placeholder="搜索学校、年份、考试科目或文件名" oninput="let s=this.value.toLowerCase().trim();document.querySelectorAll(\'.row\').forEach(x=>x.style.display=x.dataset.search.includes(s)?\'\':\'none\');document.querySelectorAll(\'.group\').forEach(x=>x.style.display=[...x.querySelectorAll(\'.row\')].some(y=>y.style.display!==\'none\')?\'\':\'none\')">'
-    page=header("电子技术真题分类目录")+'<p><a href="../index.html">← 返回首页</a></p><div class="top"><h1>电子技术真题 · 分类目录</h1><p class="muted">'+esc(notes)+'</p>'+search+'</div>'+''.join(chunks)+'</div></body></html>'
+    side = ('<aside class="nav" data-collapsed="0"><button class="nav-toggle" type="button" '
+            'onclick="this.parentNode.dataset.collapsed=this.parentNode.dataset.collapsed===&#39;1&#39;?&#39;0&#39;:&#39;1&#39;">☰ 展开／收起学校导航</button>'
+            '<div class="nav-content"><a class="brand" href="../index.html">📘 电子技术题库</a>'
+            '<div class="short">按院校／专业课浏览</div>' + ''.join(side_links) + '</div></aside>')
+    page=(header("电子技术真题分类目录")+'<div class="layout">'+side+
+          '<main class="reading"><div class="top"><h1>电子技术真题 · 分类目录</h1><p class="muted">'+esc(notes)+
+          '</p>'+search+'</div>'+''.join(chunks)+'</main></div></div></body></html>')
     (OUT/"exams"/"index.html").write_text(page,encoding="utf-8")
     (OUT/"exams"/"manifest.json").write_text(json.dumps({
         "total":len(items),"duplicates": [{"file":a,"same_as":b} for a,b in dupes],
