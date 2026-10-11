@@ -225,7 +225,13 @@ def split_questions(paper: dict) -> dict:
         m_cn = CN_START_RE.match(text)
         if m_cn:
             cnum = cn_number(m_cn.group(1))
-            if cnum is not None and cnum == expected_cn and not OPTION_RE.match(text):
+            # 从数字编号切到「一、二、三」体例时，第一道大题不管序号是多少都算新题
+            starts_new = cnum is not None and (
+                cnum == expected_cn or (num_style != "cn" and current is not None)
+            )
+            if starts_new and not OPTION_RE.match(text):
+                if num_style != "cn" and section == "选择题":
+                    section = ""  # 「一、选择题」后面接的"二、三…"是大题，别再挂着选择题的名
                 close(current)
                 current = {
                     "number": cnum,
