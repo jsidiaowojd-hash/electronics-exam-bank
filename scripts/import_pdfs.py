@@ -81,7 +81,7 @@ def main():
     copy_static()
     index_entries = []
     if INBOX.exists():
-        pdfs = sorted(INBOX.glob("*.pdf"), key=lambda p: p.name.lower())
+        pdfs = sorted([*INBOX.glob("*.pdf"), *ROOT.glob("*.pdf")], key=lambda p: p.name.lower())
         seen = set()
         for pdf in pdfs:
             normalized_stem = re.sub(r"(?:\.pdf)+$", "", pdf.name, flags=re.IGNORECASE)
