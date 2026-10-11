@@ -1,4 +1,5 @@
-name: Import PDF and publish exam website
+name: Build and publish exam site
+
 on:
   push:
     branches: [main]
@@ -19,18 +20,52 @@ jobs:
     steps:
       - name: Download repository
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - name: Install PDF renderer
-        run: python -m pip install --disable-pip-version-check "PyMuPDF>=1.24,<2"
-      - name: Convert PDFs and build static site
+          python-version: "3.11"
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --disable-pip-version-check \
+            "pdfplumber>=0.11" "pypdf>=5,<7" "Pillow>=10" "PyMuPDF>=1.24,<2"
+
+      # 结构化题库：把仓库里的 PDF 变成「逐题网页 + JSON 接口 + llms.txt」
+      - name: Build question bank site
+        run: |
+          python tools/ingest.py --pdf-root . --out build/data --site build/public
+          python tools/parse.py --data build/data
+          python tools/build.py --data build/data --site build/public \
+            --site-url "${{ steps.pages.outputs.base_url }}"
+
+      # 原有的「原卷按页阅读」站点（生成到 site/，失败不影响题库站发布）
+      - name: Build original PDF reader site
+        continue-on-error: true
         run: python scripts/import_pdfs.py
+
+      - name: Assemble public directory
+        run: |
+          mkdir -p public
+          cp -r build/public/. public/
+          if [ -f site/index.html ]; then
+            mkdir -p public/pdf
+            cp -r site/. public/pdf/
+          fi
+          touch public/.nojekyll
+          echo "--- 发布目录概览 ---"
+          du -sh public
+          find public -maxdepth 2 -name "*.html" | head -20
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: public
+
   deploy:
     environment:
       name: github-pages
