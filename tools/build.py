@@ -647,8 +647,16 @@ def build(data_dir: Path, site_dir: Path) -> dict:
         "这份文件只列题干要点、题型与知识点，**不含答案与解析**，用于快速筛选题目；"
         "确定要看哪几道之后，再打开对应链接取答案。",
         "",
-        f"共 {len(papers)} 份试卷、{total_q} 道题。链接形如 "
-        f"{SITE_URL}/paper/<试卷>/index.html#q<题号>，打开后会跳到该题。",
+        f"共 {len(papers)} 份试卷、{total_q} 道题。",
+        "",
+        "**每道题都带一个稳定的单题地址**，格式："
+        f"{SITE_URL}/question/<question_id>.html，"
+        "例：" + q_url("zsu-885-2024-p1-q11") + " 。"
+        "每行开头方括号里就是它的 question_id，可以直接引用。",
+        "（同一份卷子分「部分」时 ID 里会带 -p1/-p2；用「一、二、三」编号的大题是 -c2 这种。）",
+        "",
+        "难度一栏来自原作者在解析里标注的星号（★多则难），没有标注的写「难度未标注」——"
+        "这种情况可以让模型按题型和题干自己估，但请注明是推测。",
         "",
         "## 按知识点分组",
         "",
@@ -658,10 +666,16 @@ def build(data_dir: Path, site_dir: Path) -> dict:
         idx_md.append("")
         for slug, title, q in entries:
             meta = "，".join(
-                x for x in [q.get("section") or q.get("type"), "有答案" if q.get("answer") else ""] if x
+                x
+                for x in [
+                    q.get("section") or q.get("type"),
+                    "有答案" if q.get("answer") else "无答案",
+                    f'难度{q["difficulty_stars"]}' if q.get("difficulty_stars") else "难度未标注",
+                ]
+                if x
             )
             idx_md.append(
-                f"- {title} 第 {q['number']} 题（{meta}）：{brief_stem(q)} → "
+                f"- [{q['id']}] {title} 第 {q['number']} 题（{meta}）：{brief_stem(q)} → "
                 f"{q_url(q['id'])}"
             )
             idx_json.append(

@@ -15,12 +15,20 @@ import argparse
 import json
 from pathlib import Path
 
+SITE = "https://jsidiaowojd-hash.github.io/electronics-exam-bank"
+
 HEAD = """# 数模电考研真题库（模拟电子技术 + 数字电子技术）
 
 本文件是"数模电考研真题库"的完整导出，供 ChatGPT 等模型直接阅读。
 内容整理自公开流传的历年考研真题 PDF，解析版权归原作者，仅供个人复习使用。
 
 数据规模：{n_papers} 份试卷 / {n_q} 道题 / {n_a} 道有答案 / {n_e} 道有解析 / {n_f} 处配图。
+
+每道题都有一个稳定的单题页地址，格式：
+    https://jsidiaowojd-hash.github.io/electronics-exam-bank/question/<question_id>.html
+题目 ID 规则：<试卷 slug>-q<题号>；卷内分「部分」时加 -p<部分序号>；
+用「一、二、三」编号的大题用 -c<序号>（例：zsu-885-2024-p1-c2）。
+正文里每道题都会给出它的 question_id 和这个链接。
 
 每道题的字段说明：
 - 题号、题型（choice 选择题 / fill 填空 / calc 大题 / analysis 分析）
@@ -38,13 +46,60 @@ HEAD = """# 数模电考研真题库（模拟电子技术 + 数字电子技术�
 """
 
 
-def build(data_dir: Path, out_dir: Path) -> dict:
+def load_local(data_dir: Path) -> list[dict]:
     papers = []
     for path in sorted((data_dir / "questions").glob("*.json")):
         if path.name == "index.json":
             continue
         papers.append(json.loads(path.read_text(encoding="utf-8")))
     papers.sort(key=lambda p: (-(p.get("year") or 0), p.get("slug", "")))
+    return papers
+
+
+def load_api() -> list[dict]:
+    """从线上接口取数，保证附件和网站内容一致（含 CI 收录的全部卷子）。"""
+    import urllib.request
+
+    def get(path: str):
+        with urllib.request.urlopen(SITE + path, timeout=60) as resp:
+            return json.loads(resp.read().decode())
+
+    meta = {p["slug"]: p for p in get("/api/papers.json")["papers"]}
+    grouped: dict[str, list] = {}
+    for q in get("/api/questions.json")["questions"]:
+        grouped.setdefault(q["slug"], []).append(q)
+    papers = []
+    for slug, qs in grouped.items():
+        m = meta.get(slug, {})
+        papers.append(
+            {
+                "slug": slug,
+                "school": m.get("school"),
+                "code": m.get("code"),
+                "year": m.get("year"),
+                "page_count": m.get("page_count"),
+                "stats": {
+                    "total": len(qs),
+                    "with_answer": sum(1 for q in qs if q.get("answer")),
+                    "with_explanation": sum(1 for q in qs if q.get("explanation")),
+                    "with_figure": sum(1 for q in qs if q.get("figures")),
+                },
+                "questions": sorted(qs, key=lambda q: (q.get("page") or 0, q["number"])),
+            }
+        )
+    papers.sort(key=lambda p: (-(p.get("year") or 0), p.get("slug", "")))
+    return papers
+
+
+def build(data_dir: Path, out_dir: Path) -> dict:
+    return render(load_local(data_dir), out_dir)
+
+
+def build_from_api(out_dir: Path) -> dict:
+    return render(load_api(), out_dir)
+
+
+def render(papers: list[dict], out_dir: Path) -> dict:
 
     n_q = sum(p.get("stats", {}).get("total", 0) for p in papers)
     n_a = sum(p.get("stats", {}).get("with_answer", 0) for p in papers)
@@ -71,7 +126,13 @@ def build(data_dir: Path, out_dir: Path) -> dict:
         lines.append(f"\n### {title}\n")
         for q in p["questions"]:
             section = q.get("section") or ""
-            lines.append(f"#### 第 {q['number']} 题（{section}，置信度 {q.get('confidence')}）")
+            qid = q.get("id") or f"{p['slug']}-q{q['number']}"
+            stars = q.get("difficulty_stars")
+            lines.append(
+                f"#### 第 {q['number']} 题（{section}，id: {qid}，"
+                f"难度 {stars or '未标注'}，置信度 {q.get('confidence')}）"
+            )
+            lines.append(f"单题链接：{SITE}/question/{qid}.html")
             lines.append(q["stem"])
             for opt in q.get("options", []):
                 lines.append(f"- {opt['label']}. {opt['text']}")
@@ -100,7 +161,12 @@ def build(data_dir: Path, out_dir: Path) -> dict:
         title = f"{p.get('school') or '未知学校'} {p.get('code') or ''} {p.get('year') or ''} 电子技术".strip()
         chunk = [f"# {title}（{p['slug']}）", ""]
         for q in p["questions"]:
-            chunk.append(f"## 第 {q['number']} 题（{q.get('section') or ''}，置信度 {q.get('confidence')}）")
+            qid = q.get("id") or f"{p['slug']}-q{q['number']}"
+            chunk.append(
+                f"## 第 {q['number']} 题（{q.get('section') or ''}，id: {qid}，"
+                f"难度 {q.get('difficulty_stars') or '未标注'}）"
+            )
+            chunk.append(f"单题链接：{SITE}/question/{qid}.html")
             chunk.append(q["stem"])
             for opt in q.get("options", []):
                 chunk.append(f"- {opt['label']}. {opt['text']}")
@@ -155,8 +221,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", type=Path, default=Path("data"))
     ap.add_argument("--out", type=Path, default=Path("ChatGPT可直接读"))
+    ap.add_argument("--from-url", action="store_true",
+                    help="改为从线上接口取数（与网站内容完全一致，含 CI 收录的全部卷子）")
     args = ap.parse_args()
-    stats = build(args.data, args.out)
+    stats = build_from_api(args.out) if args.from_url else build(args.data, args.out)
     print(
         f"[export] {stats['papers']} 份试卷 / {stats['questions']} 题 -> "
         f"{stats['bundle']} ({stats['size_kb']} KB)"
