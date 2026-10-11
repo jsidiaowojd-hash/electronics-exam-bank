@@ -507,6 +507,57 @@ def build(data_dir: Path, site_dir: Path) -> dict:
         encoding="utf-8",
     )
 
+    # ---------- 选题索引：给"帮我挑题"用的轻量清单（不含答案解析）----------
+    def brief_stem(q: dict, width: int = 88) -> str:
+        s = re.sub(r"\s+", " ", q.get("stem", "")).strip()
+        return s[:width] + ("…" if len(s) > width else "")
+
+    idx_json, idx_md = [], [
+        f"# {SITE_NAME} · 选题索引",
+        "",
+        "这份文件只列题干要点、题型与知识点，**不含答案与解析**，用于快速筛选题目；"
+        "确定要看哪几道之后，再打开对应链接取答案。",
+        "",
+        f"共 {len(papers)} 份试卷、{total_q} 道题。链接形如 "
+        f"{SITE_URL}/paper/<试卷>/index.html#q<题号>，打开后会跳到该题。",
+        "",
+        "## 按知识点分组",
+        "",
+    ]
+    for tag, entries in sorted(tag_map.items(), key=lambda kv: -len(kv[1])):
+        idx_md.append(f"### {tag}（{len(entries)} 题）")
+        idx_md.append("")
+        for slug, title, q in entries:
+            meta = "，".join(
+                x for x in [q.get("section") or q.get("type"), "有答案" if q.get("answer") else ""] if x
+            )
+            idx_md.append(
+                f"- {title} 第 {q['number']} 题（{meta}）：{brief_stem(q)} → "
+                f"{SITE_URL}/paper/{slug}/index.html#q{q['number']}"
+            )
+            idx_json.append(
+                {
+                    "id": q["id"],
+                    "paper": title,
+                    "slug": slug,
+                    "number": q["number"],
+                    "type": q.get("type"),
+                    "section": q.get("section"),
+                    "tags": q.get("tags", []),
+                    "has_answer": bool(q.get("answer")),
+                    "has_figure": bool(q.get("figures")),
+                    "stem": brief_stem(q, 160),
+                    "url": f"{SITE_URL}/paper/{slug}/index.html#q{q['number']}",
+                }
+            )
+        idx_md.append("")
+    (site_dir / "question-index.md").write_text("\n".join(idx_md), encoding="utf-8")
+    (api / "question-index.json").write_text(
+        json.dumps({"site": SITE_NAME, "count": len(idx_json), "questions": idx_json},
+                   ensure_ascii=False, indent=1),
+        encoding="utf-8",
+    )
+
     llms = [f"# {SITE_NAME}", "", f"> {SITE_TAGLINE}。共 {len(papers)} 份试卷、{total_q} 道题，"
             f"其中 {total_a} 题带答案与解析。", "",
             "## 试卷清单", ""]
@@ -529,6 +580,9 @@ def build(data_dir: Path, site_dir: Path) -> dict:
              f"- 知识点统计: {SITE_URL}/api/tags.json",
              f"- 全量纯文本: {SITE_URL}/llms-full.txt",
              f"- 接口定义: {SITE_URL}/openapi.yaml", "",
+             "## 想让模型帮你挑题时先读这个", "",
+             f"- 选题索引（只有题干要点+知识点，不含答案解析，最省 token）：{SITE_URL}/question-index.md",
+             f"- 同上的 JSON 版本：{SITE_URL}/api/question-index.json", "",
              "## 使用说明", "",
              "题目 JSON 字段：id / number / part / section / type / stem / options / figures / "
              "answer / explanation / tags / page / confidence。confidence 为 low 或 medium 表示"
@@ -553,6 +607,7 @@ def build(data_dir: Path, site_dir: Path) -> dict:
     (site_dir / "llms-full.txt").write_text("\n".join(full), encoding="utf-8")
 
     urls = ["index.html", "search/index.html", "llms.txt", "llms-full.txt", "api/papers.json"]
+    urls += ["question-index.md", "api/question-index.json"]
     urls += [f"paper/{p['slug']}/index.html" for p in papers]
     urls += [f"paper/{p['slug']}/index.html" for p in browse_only]
     urls += [f"tag/{tag_slug(t)}/index.html" for t in tag_map]

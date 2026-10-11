@@ -26,6 +26,7 @@ import json
 import logging
 import re
 import statistics
+import unicodedata
 from pathlib import Path
 
 import pdfplumber
@@ -199,7 +200,15 @@ def fix_formula_text(text: str, fontname: str = "") -> str:
     out = []
     for ch in text:
         code = ord(ch)
-        if 0xF000 <= code <= 0xF0FF:
+        # 有的 PDF 把数学斜体字母（U+1D4xx）的映射表写错了，存成"码位-0x10000"，
+        # 于是 𝐵 变成韩文音节 U+D435。反过来还原后再用 NFKC 拉回普通字母 B。
+        if 0xD400 <= code <= 0xD7FF:
+            cand = code + 0x10000
+            if 0x1D400 <= cand <= 0x1D7FF:
+                out.append(unicodedata.normalize("NFKC", chr(cand)))
+            else:
+                out.append("")
+        elif 0xF000 <= code <= 0xF0FF:
             out.append(table.get(code - 0xF000, "") if table else "")
         elif 0xE000 <= code <= 0xF8FF:
             out.append("")
@@ -244,7 +253,18 @@ def _looks_like_script(frag, prev) -> bool:
     gap = frag["top"] - prev["bottom"]
     if not (-1.2 * prev["size"] <= gap <= 0.8 * prev["size"]):
         return False
-    return prev["x0"] - 4 <= frag["x0"] <= prev["x1"] + 12
+    if not (prev["x0"] - 4 <= frag["x0"] <= prev["x1"] + 12):
+        return False
+    # 只有当碎片真的落在某个底字正下方时才合并——有的 PDF 把下标整行铺开、
+    # 和底字根本不对齐，硬塞回去只会把字撒得到处都是，不如保持原样。
+    base = prev["chars"]
+    widths = [max(1e-6, b["x1"] - b["x0"]) for b in base]
+    char_w = statistics.median(widths) if widths else 6.0
+    centers = [(b["x0"] + b["x1"]) / 2 for b in base]
+    dists = [
+        min(abs(c0 - (ch["x0"] + ch["x1"]) / 2) for c0 in centers) for ch in frag["chars"]
+    ]
+    return (statistics.median(dists) if dists else 99) <= max(7.0, 1.3 * char_w)
 
 
 def _attach_script(prev, frag) -> None:
