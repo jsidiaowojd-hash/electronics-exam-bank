@@ -1,325 +1,654 @@
-{
-  "version": "1.0",
-  "school": "中山大学",
-  "exam_code": "885",
-  "exam_name": "电子技术（数字和模拟）",
-  "usage": "本文件供网页版 ChatGPT 直接读取：按 tag 或 chapter 过滤 questions，即可返回对应知识点题目与可直接打开的链接（link 字段）。",
-  "how_to_use": [
-    "用户问“差分放大有哪些题” → 在 questions[].tags 中匹配“差分放大”，返回 paper/year/question/考点/tags/link。",
-    "用户问“我学完集成运算放大电路，测我” → 过滤 chapter == '集成运算放大电路'，随机抽 1 题并给 link。",
-    "link 指向 rendered 页面渲染图（可直接打开看原题原图）。"
-  ],
-  "base_url": "https://jsidiaowojd-hash.github.io/electronics-exam-bank",
-  "papers": [
-    {
-      "id": "sysu-885-2021",
-      "school": "中山大学",
-      "year": 2021,
-      "exam": "885 电子技术（数字和模拟）",
-      "paper_file": "中大885电子技术21年真题及答案解析-星星哥原创(1).pdf",
-      "slug": "885-21-1-79ffebc606b2",
-      "page_count": 21,
-      "question_pages": "1-6",
-      "answer_pages": "7-21",
-      "paper_url": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html",
-      "status": "已确认",
-      "questions": [
-        {
-          "no": "一T1",
-          "subject": "模拟电路",
-          "chapter": "半导体基础",
-          "tags": ["场效应管", "三极管", "电压控制", "电流控制"],
-          "difficulty": "简单",
-          "page": 1,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
-          "in_paper": 1
-        },
-        {
-          "no": "一T2",
-          "subject": "模拟电路",
-          "chapter": "运算电路",
-          "tags": ["正弦波振荡", "起振条件", "相位平衡", "幅度平衡"],
-          "difficulty": "中等",
-          "page": 1,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
-          "in_paper": 2
-        },
-        {
-          "no": "一T3",
-          "subject": "模拟电路",
-          "chapter": "集成运算放大电路",
-          "tags": ["直流稳压电源", "整流", "滤波", "稳压"],
-          "difficulty": "简单",
-          "page": 1,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
-          "in_paper": 3
-        },
-        {
-          "no": "一T4",
-          "subject": "模拟电路",
-          "chapter": "集成运算放大电路",
-          "tags": ["差分放大", "温漂", "集成运放"],
-          "difficulty": "简单",
-          "page": 1,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
-          "in_paper": 4
-        },
-        {
-          "no": "一T5",
-          "subject": "模拟电路",
-          "chapter": "频率响应",
-          "tags": ["频率响应", "幅频特性", "测试方法"],
-          "difficulty": "中等",
-          "page": 1,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
-          "in_paper": 5
-        },
-        {
-          "no": "一T6",
-          "subject": "模拟电路",
-          "chapter": "三极管",
-          "tags": ["三极管类型判断", "PNP", "NPN", "电极电位"],
-          "difficulty": "中等",
-          "page": 2,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
-          "in_paper": 6
-        },
-        {
-          "no": "一T7",
-          "subject": "模拟电路",
-          "chapter": "多级放大电路",
-          "tags": ["多级放大", "总增益", "增益相乘"],
-          "difficulty": "简单",
-          "page": 2,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
-          "in_paper": 7
-        },
-        {
-          "no": "一T8",
-          "subject": "模拟电路",
-          "chapter": "频率响应",
-          "tags": ["两级放大", "波特图", "增益分贝", "频率响应"],
-          "difficulty": "困难",
-          "page": 2,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
-          "in_paper": 8
-        },
-        {
-          "no": "一T9",
-          "subject": "模拟电路",
-          "chapter": "运算电路",
-          "tags": ["积分运算", "方波转三角波", "波形变换"],
-          "difficulty": "中等",
-          "page": 2,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
-          "in_paper": 9
-        },
-        {
-          "no": "一T10",
-          "subject": "模拟电路",
-          "chapter": "二极管",
-          "tags": ["桥式整流", "滤波电容", "二极管断路", "整流电路"],
-          "difficulty": "困难",
-          "page": 2,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
-          "in_paper": 10
-        },
-        {
-          "no": "二T1",
-          "subject": "模拟电路",
-          "chapter": "基本放大电路",
-          "tags": ["静态工作点", "放大倍数", "输入输出电阻", "β 影响"],
-          "difficulty": "中等",
-          "page": 3,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-003.jpg",
-          "in_paper": 1
-        },
-        {
-          "no": "二T2",
-          "subject": "模拟电路",
-          "chapter": "三极管",
-          "tags": ["复合管", "复合管类型判断", "达林顿"],
-          "difficulty": "中等",
-          "page": 4,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-004.jpg",
-          "in_paper": 2
-        },
-        {
-          "no": "二T3",
-          "subject": "模拟电路",
-          "chapter": "运算电路",
-          "tags": ["加法运算", "减法运算", "运算关系求解", "运算电路"],
-          "difficulty": "中等",
-          "page": 5,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-005.jpg",
-          "in_paper": 3
-        },
-        {
-          "no": "二T4",
-          "subject": "模拟电路",
-          "chapter": "频率响应",
-          "tags": ["转移函数", "波特图", "下限截止频率", "上限截止频率"],
-          "difficulty": "中等",
-          "page": 6,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-006.jpg",
-          "in_paper": 4
-        },
-        {
-          "no": "二T5",
-          "subject": "模拟电路",
-          "chapter": "运算电路",
-          "tags": ["滞回比较器", "电压传输特性", "门限电压", "参考电压"],
-          "difficulty": "困难",
-          "page": 6,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-006.jpg",
-          "in_paper": 5
-        },
-        {
-          "no": "三T1",
-          "subject": "数字电路",
-          "chapter": "组合逻辑",
-          "tags": ["TTL 门电路", "逻辑功能实现", "与非门", "门电路选择"],
-          "difficulty": "中等",
-          "page": 7,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
-          "in_paper": 1
-        },
-        {
-          "no": "三T2",
-          "subject": "数字电路",
-          "chapter": "AD/DA",
-          "tags": ["A/D 转换", "并行比较", "逐次逼近", "转换速率"],
-          "difficulty": "简单",
-          "page": 7,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
-          "in_paper": 2
-        },
-        {
-          "no": "三T3",
-          "subject": "数字电路",
-          "chapter": "触发器",
-          "tags": ["D 触发器转 T 触发器", "异或门", "触发器转换"],
-          "difficulty": "中等",
-          "page": 7,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
-          "in_paper": 3
-        },
-        {
-          "no": "三T4",
-          "subject": "数字电路",
-          "chapter": "时序逻辑",
-          "tags": ["方波周期扩展", "二进制计数器", "分频"],
-          "difficulty": "中等",
-          "page": 7,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
-          "in_paper": 4
-        },
-        {
-          "no": "三T5",
-          "subject": "数字电路",
-          "chapter": "存储器",
-          "tags": ["存储器容量", "地址线", "4K×8"],
-          "difficulty": "简单",
-          "page": 7,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
-          "in_paper": 5
-        },
-        {
-          "no": "四T1",
-          "subject": "数字电路",
-          "chapter": "逻辑代数",
-          "tags": ["逻辑函数化简", "最简与或式", "逻辑代数"],
-          "difficulty": "中等",
-          "page": 7,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
-          "in_paper": 1
-        },
-        {
-          "no": "四T2",
-          "subject": "数字电路",
-          "chapter": "组合逻辑",
-          "tags": ["译码器 74LS154", "最简与或式", "地址选择"],
-          "difficulty": "困难",
-          "page": 8,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-008.jpg",
-          "in_paper": 2
-        },
-        {
-          "no": "四T3",
-          "subject": "数字电路",
-          "chapter": "组合逻辑",
-          "tags": ["三线八线译码器", "水位控制", "逻辑功能实现"],
-          "difficulty": "困难",
-          "page": 8,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-008.jpg",
-          "in_paper": 3
-        },
-        {
-          "no": "四T4",
-          "subject": "数字电路",
-          "chapter": "时序逻辑",
-          "tags": ["同步计数器", "JK 触发器", "状态转换图", "时序逻辑分析"],
-          "difficulty": "困难",
-          "page": 9,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-009.jpg",
-          "in_paper": 4
-        },
-        {
-          "no": "四T5",
-          "subject": "数字电路",
-          "chapter": "触发器",
-          "tags": ["D 触发器", "JK 触发器", "状态方程", "波形图"],
-          "difficulty": "困难",
-          "page": 9,
-          "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-009.jpg",
-          "in_paper": 5
-        }
-      ],
-      "answer_key": [
-        {"range": "7-9", "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html#page-7", "note": "选择题与模电解答题解析"},
-        {"range": "10-13", "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html#page-10", "note": "模电解答题解析"},
-        {"range": "14-17", "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html#page-14", "note": "数字部分解析"},
-        {"range": "18-21", "link": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html#page-18", "note": "数字部分解析"}
-      ]
-    },
-    {
-      "id": "sysu-885-2022",
-      "school": "中山大学",
-      "year": 2022,
-      "exam": "885 电子技术（数字和模拟）",
-      "paper_file": "中大885电子技术22年真题及答案解析-星星哥原创.pdf",
-      "slug": "885-22-62fe89c0e677",
-      "page_count": 18,
-      "paper_url": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/index.html",
-      "status": "待人工确认",
-      "questions": [],
-      "note": "渲染图已生成（18 页），逐题标签待补：需读 1-18 页确定题目与答案分界再填入。"
-    },
-    {
-      "id": "sysu-885-2023",
-      "school": "中山大学",
-      "year": 2023,
-      "exam": "885 电子技术（数字和模拟）· 回忆版",
-      "paper_file": "23年 885回忆版.pdf",
-      "slug": "23-885-464cbb80b2c1",
-      "page_count": 10,
-      "paper_url": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/23-885-464cbb80b2c1/index.html",
-      "status": "待人工确认",
-      "questions": [],
-      "note": "渲染图已生成（10 页），逐题标签待补。"
-    },
-    {
-      "id": "sysu-885-2024",
-      "school": "中山大学",
-      "year": 2024,
-      "exam": "885 电子技术（数字和模拟）",
-      "paper_file": "中大885电子技术24年真题及答案解析-星星哥原创.pdf",
-      "slug": "885-24-6ff4f7857369",
-      "page_count": 26,
-      "paper_url": "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-24-6ff4f7857369/index.html",
-      "status": "待人工确认",
-      "questions": [],
-      "note": "渲染图已生成（26 页），逐题标签待补。"
-    }
-  ]
+﻿{
+    "version":  "1.0",
+    "school":  "中山大学",
+    "exam_code":  "885",
+    "exam_name":  "电子技术（数字和模拟）",
+    "usage":  "本文件供网页版 ChatGPT 直接读取：按 tag 或 chapter 过滤 questions，即可返回对应知识点题目与可直接打开的链接（link 字段）。",
+    "how_to_use":  [
+                       "用户问“差分放大有哪些题” → 在 questions[].tags 中匹配“差分放大”，返回 paper/year/question/考点/tags/link。",
+                       "用户问“我学完集成运算放大电路，测我” → 过滤 chapter == \u0027集成运算放大电路\u0027，随机抽 1 题并给 link。",
+                       "link 指向 rendered 页面渲染图（可直接打开看原题原图）。"
+                   ],
+    "base_url":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank",
+    "papers":  [
+                   {
+                       "id":  "sysu-885-2021",
+                       "school":  "中山大学",
+                       "year":  2021,
+                       "exam":  "885 电子技术（数字和模拟）",
+                       "paper_file":  "中大885电子技术21年真题及答案解析-星星哥原创(1).pdf",
+                       "slug":  "885-21-1-79ffebc606b2",
+                       "page_count":  21,
+                       "question_pages":  "1-6",
+                       "answer_pages":  "7-21",
+                       "paper_url":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html",
+                       "status":  "已确认",
+                       "questions":  [
+                                         {
+                                             "no":  "一T1",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "半导体基础",
+                                             "tags":  [
+                                                          "场效应管",
+                                                          "三极管",
+                                                          "电压控制",
+                                                          "电流控制"
+                                                      ],
+                                             "difficulty":  "简单",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
+                                             "in_paper":  1
+                                         },
+                                         {
+                                             "no":  "一T2",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "运算电路",
+                                             "tags":  [
+                                                          "正弦波振荡",
+                                                          "起振条件",
+                                                          "相位平衡",
+                                                          "幅度平衡"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
+                                             "in_paper":  2
+                                         },
+                                         {
+                                             "no":  "一T3",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "集成运算放大电路",
+                                             "tags":  [
+                                                          "直流稳压电源",
+                                                          "整流",
+                                                          "滤波",
+                                                          "稳压"
+                                                      ],
+                                             "difficulty":  "简单",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
+                                             "in_paper":  3
+                                         },
+                                         {
+                                             "no":  "一T4",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "集成运算放大电路",
+                                             "tags":  [
+                                                          "差分放大",
+                                                          "温漂",
+                                                          "集成运放"
+                                                      ],
+                                             "difficulty":  "简单",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
+                                             "in_paper":  4
+                                         },
+                                         {
+                                             "no":  "一T5",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "频率响应",
+                                             "tags":  [
+                                                          "频率响应",
+                                                          "幅频特性",
+                                                          "测试方法"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg",
+                                             "in_paper":  5
+                                         },
+                                         {
+                                             "no":  "一T6",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "三极管",
+                                             "tags":  [
+                                                          "三极管类型判断",
+                                                          "PNP",
+                                                          "NPN",
+                                                          "电极电位"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  2,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
+                                             "in_paper":  6
+                                         },
+                                         {
+                                             "no":  "一T7",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "多级放大电路",
+                                             "tags":  [
+                                                          "多级放大",
+                                                          "总增益",
+                                                          "增益相乘"
+                                                      ],
+                                             "difficulty":  "简单",
+                                             "page":  2,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
+                                             "in_paper":  7
+                                         },
+                                         {
+                                             "no":  "一T8",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "频率响应",
+                                             "tags":  [
+                                                          "两级放大",
+                                                          "波特图",
+                                                          "增益分贝",
+                                                          "频率响应"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  2,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
+                                             "in_paper":  8
+                                         },
+                                         {
+                                             "no":  "一T9",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "运算电路",
+                                             "tags":  [
+                                                          "积分运算",
+                                                          "方波转三角波",
+                                                          "波形变换"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  2,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
+                                             "in_paper":  9
+                                         },
+                                         {
+                                             "no":  "一T10",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "二极管",
+                                             "tags":  [
+                                                          "桥式整流",
+                                                          "滤波电容",
+                                                          "二极管断路",
+                                                          "整流电路"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  2,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg",
+                                             "in_paper":  10
+                                         },
+                                         {
+                                             "no":  "二T1",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "基本放大电路",
+                                             "tags":  [
+                                                          "静态工作点",
+                                                          "放大倍数",
+                                                          "输入输出电阻",
+                                                          "β 影响"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  3,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-003.jpg",
+                                             "in_paper":  1
+                                         },
+                                         {
+                                             "no":  "二T2",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "三极管",
+                                             "tags":  [
+                                                          "复合管",
+                                                          "复合管类型判断",
+                                                          "达林顿"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  4,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-004.jpg",
+                                             "in_paper":  2
+                                         },
+                                         {
+                                             "no":  "二T3",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "运算电路",
+                                             "tags":  [
+                                                          "加法运算",
+                                                          "减法运算",
+                                                          "运算关系求解",
+                                                          "运算电路"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  5,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-005.jpg",
+                                             "in_paper":  3
+                                         },
+                                         {
+                                             "no":  "二T4",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "频率响应",
+                                             "tags":  [
+                                                          "转移函数",
+                                                          "波特图",
+                                                          "下限截止频率",
+                                                          "上限截止频率"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  6,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-006.jpg",
+                                             "in_paper":  4
+                                         },
+                                         {
+                                             "no":  "二T5",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "运算电路",
+                                             "tags":  [
+                                                          "滞回比较器",
+                                                          "电压传输特性",
+                                                          "门限电压",
+                                                          "参考电压"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  6,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-006.jpg",
+                                             "in_paper":  5
+                                         },
+                                         {
+                                             "no":  "三T1",
+                                             "subject":  "数字电路",
+                                             "chapter":  "组合逻辑",
+                                             "tags":  [
+                                                          "TTL 门电路",
+                                                          "逻辑功能实现",
+                                                          "与非门",
+                                                          "门电路选择"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  7,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
+                                             "in_paper":  1
+                                         },
+                                         {
+                                             "no":  "三T2",
+                                             "subject":  "数字电路",
+                                             "chapter":  "AD/DA",
+                                             "tags":  [
+                                                          "A/D 转换",
+                                                          "并行比较",
+                                                          "逐次逼近",
+                                                          "转换速率"
+                                                      ],
+                                             "difficulty":  "简单",
+                                             "page":  7,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
+                                             "in_paper":  2
+                                         },
+                                         {
+                                             "no":  "三T3",
+                                             "subject":  "数字电路",
+                                             "chapter":  "触发器",
+                                             "tags":  [
+                                                          "D 触发器转 T 触发器",
+                                                          "异或门",
+                                                          "触发器转换"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  7,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
+                                             "in_paper":  3
+                                         },
+                                         {
+                                             "no":  "三T4",
+                                             "subject":  "数字电路",
+                                             "chapter":  "时序逻辑",
+                                             "tags":  [
+                                                          "方波周期扩展",
+                                                          "二进制计数器",
+                                                          "分频"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  7,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
+                                             "in_paper":  4
+                                         },
+                                         {
+                                             "no":  "三T5",
+                                             "subject":  "数字电路",
+                                             "chapter":  "存储器",
+                                             "tags":  [
+                                                          "存储器容量",
+                                                          "地址线",
+                                                          "4K×8"
+                                                      ],
+                                             "difficulty":  "简单",
+                                             "page":  7,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
+                                             "in_paper":  5
+                                         },
+                                         {
+                                             "no":  "四T1",
+                                             "subject":  "数字电路",
+                                             "chapter":  "逻辑代数",
+                                             "tags":  [
+                                                          "逻辑函数化简",
+                                                          "最简与或式",
+                                                          "逻辑代数"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  7,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg",
+                                             "in_paper":  1
+                                         },
+                                         {
+                                             "no":  "四T2",
+                                             "subject":  "数字电路",
+                                             "chapter":  "组合逻辑",
+                                             "tags":  [
+                                                          "译码器 74LS154",
+                                                          "最简与或式",
+                                                          "地址选择"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  8,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-008.jpg",
+                                             "in_paper":  2
+                                         },
+                                         {
+                                             "no":  "四T3",
+                                             "subject":  "数字电路",
+                                             "chapter":  "组合逻辑",
+                                             "tags":  [
+                                                          "三线八线译码器",
+                                                          "水位控制",
+                                                          "逻辑功能实现"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  8,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-008.jpg",
+                                             "in_paper":  3
+                                         },
+                                         {
+                                             "no":  "四T4",
+                                             "subject":  "数字电路",
+                                             "chapter":  "时序逻辑",
+                                             "tags":  [
+                                                          "同步计数器",
+                                                          "JK 触发器",
+                                                          "状态转换图",
+                                                          "时序逻辑分析"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  9,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-009.jpg",
+                                             "in_paper":  4
+                                         },
+                                         {
+                                             "no":  "四T5",
+                                             "subject":  "数字电路",
+                                             "chapter":  "触发器",
+                                             "tags":  [
+                                                          "D 触发器",
+                                                          "JK 触发器",
+                                                          "状态方程",
+                                                          "波形图"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  9,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-009.jpg",
+                                             "in_paper":  5
+                                         }
+                                     ],
+                       "answer_key":  [
+                                          {
+                                              "range":  "7-9",
+                                              "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html#page-7",
+                                              "note":  "选择题与模电解答题解析"
+                                          },
+                                          {
+                                              "range":  "10-13",
+                                              "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html#page-10",
+                                              "note":  "模电解答题解析"
+                                          },
+                                          {
+                                              "range":  "14-17",
+                                              "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html#page-14",
+                                              "note":  "数字部分解析"
+                                          },
+                                          {
+                                              "range":  "18-21",
+                                              "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/index.html#page-18",
+                                              "note":  "数字部分解析"
+                                          }
+                                      ]
+                   },
+                   {
+                       "id":  "sysu-885-2022",
+                       "school":  "中山大学",
+                       "year":  2022,
+                       "exam":  "885 电子技术（数字和模拟）",
+                       "paper_file":  "中大885电子技术22年真题及答案解析-星星哥原创.pdf",
+                       "slug":  "885-22-62fe89c0e677",
+                       "page_count":  18,
+                       "paper_url":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/index.html",
+                       "status":  "部分确认",
+                       "questions":  [
+                                         {
+                                             "no":  "一T1",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "二极管",
+                                             "tags":  [
+                                                          "稳压管",
+                                                          "稳压区",
+                                                          "反向击穿"
+                                                      ],
+                                             "difficulty":  "简单",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-001.jpg"
+                                         },
+                                         {
+                                             "no":  "一T2",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "多级放大电路",
+                                             "tags":  [
+                                                          "直接耦合",
+                                                          "集成放大",
+                                                          "耦合方式"
+                                                      ],
+                                             "difficulty":  "简单",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-001.jpg"
+                                         },
+                                         {
+                                             "no":  "一T3",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "频率响应",
+                                             "tags":  [
+                                                          "低频增益下降",
+                                                          "耦合电容",
+                                                          "旁路电容"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-001.jpg"
+                                         },
+                                         {
+                                             "no":  "一T4",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "运算电路",
+                                             "tags":  [
+                                                          "积分运算",
+                                                          "方波转三角波"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-001.jpg"
+                                         },
+                                         {
+                                             "no":  "一T5",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "集成运算放大电路",
+                                             "tags":  [
+                                                          "开关型直流电源",
+                                                          "效率",
+                                                          "开关状态"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-001.jpg"
+                                         },
+                                         {
+                                             "no":  "一T6",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "反馈",
+                                             "tags":  [
+                                                          "电压反馈",
+                                                          "电流反馈",
+                                                          "串联反馈",
+                                                          "并联反馈",
+                                                          "输入输出电阻"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-001.jpg"
+                                         },
+                                         {
+                                             "no":  "一T7",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "集成运算放大电路",
+                                             "tags":  [
+                                                          "共射中间级",
+                                                          "放大倍数"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  1,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-001.jpg"
+                                         },
+                                         {
+                                             "no":  "一T8",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "反馈",
+                                             "tags":  [
+                                                          "电流并联负反馈",
+                                                          "稳定输出电流"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  2,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-002.jpg"
+                                         },
+                                         {
+                                             "no":  "一T9",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "频率响应",
+                                             "tags":  [
+                                                          "相位关系",
+                                                          "上下限频率"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  2,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-002.jpg"
+                                         },
+                                         {
+                                             "no":  "一T10",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "功率放大",
+                                             "tags":  [
+                                                          "OTL",
+                                                          "输出耦合电容",
+                                                          "Vcc/2"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  2,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-002.jpg"
+                                         },
+                                         {
+                                             "no":  "二T1",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "二极管",
+                                             "tags":  [
+                                                          "二极管限幅",
+                                                          "输出电压波形",
+                                                          "导通电压"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  2,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-002.jpg"
+                                         },
+                                         {
+                                             "no":  "二T2",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "基本放大电路",
+                                             "tags":  [
+                                                          "静态工作点",
+                                                          "偏置电阻",
+                                                          "共射放大"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  3,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-003.jpg"
+                                         },
+                                         {
+                                             "no":  "二T3",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "集成运算放大电路",
+                                             "tags":  [
+                                                          "差分放大",
+                                                          "共模抑制比",
+                                                          "差模电压",
+                                                          "共模电压"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  3,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-003.jpg"
+                                         },
+                                         {
+                                             "no":  "二T4",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "频率响应",
+                                             "tags":  [
+                                                          "两级放大",
+                                                          "波特图",
+                                                          "上下限截止频率"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  4,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-004.jpg"
+                                         },
+                                         {
+                                             "no":  "二T5",
+                                             "subject":  "模拟电路",
+                                             "chapter":  "运算电路",
+                                             "tags":  [
+                                                          "运算关系求解",
+                                                          "测量放大器",
+                                                          "运算电路"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  4,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-004.jpg"
+                                         }
+                                     ],
+                       "note":  "已确认并标注模电第一部分全部 15 题（选择 10 + 解答 5，第 1-4 页）；数字部分（约第 5-6 页）待读补齐。"
+                   },
+                   {
+                       "id":  "sysu-885-2023",
+                       "school":  "中山大学",
+                       "year":  2023,
+                       "exam":  "885 电子技术（数字和模拟）· 回忆版",
+                       "paper_file":  "23年 885回忆版.pdf",
+                       "slug":  "23-885-464cbb80b2c1",
+                       "page_count":  10,
+                       "paper_url":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/23-885-464cbb80b2c1/index.html",
+                       "status":  "待人工确认",
+                       "questions":  [
+
+                                     ],
+                       "note":  "渲染图已生成（10 页），逐题标签待补。"
+                   },
+                   {
+                       "id":  "sysu-885-2024",
+                       "school":  "中山大学",
+                       "year":  2024,
+                       "exam":  "885 电子技术（数字和模拟）",
+                       "paper_file":  "中大885电子技术24年真题及答案解析-星星哥原创.pdf",
+                       "slug":  "885-24-6ff4f7857369",
+                       "page_count":  26,
+                       "paper_url":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-24-6ff4f7857369/index.html",
+                       "status":  "待人工确认",
+                       "questions":  [
+
+                                     ],
+                       "note":  "渲染图已生成（26 页），逐题标签待补。"
+                   }
+               ]
 }
