@@ -84,7 +84,8 @@ def main():
         pdfs = sorted(INBOX.glob("*.pdf"), key=lambda p: p.name.lower())
         seen = set()
         for pdf in pdfs:
-            stem = slugify(pdf.stem)
+            normalized_stem = re.sub(r"(?:\\.pdf)+$", "", pdf.name, flags=re.IGNORECASE)
+            stem = slugify(normalized_stem)
             if stem in seen:
                 raise ValueError(f"duplicate URL slug for: {pdf.name}")
             seen.add(stem)
