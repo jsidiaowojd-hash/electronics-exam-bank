@@ -65,6 +65,13 @@ details{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
 summary{cursor:pointer;color:var(--brand);font-size:14px;font-weight:600}
 .answer{margin-top:10px;background:#fafbfd;border:1px solid var(--line);border-radius:8px;padding:12px}
 .answer b{color:var(--ok)}
+.ans-src{margin:12px 0 4px}
+.ans-src img{width:100%;border:1px solid var(--line);border-radius:6px;background:#fff}
+.ans-src figcaption{font-size:12px;color:var(--muted);text-align:left;margin-top:4px}
+.text-ver{margin-top:10px;border-top:1px dotted var(--line);padding-top:8px}
+.text-ver summary{font-weight:500;color:var(--muted);font-size:13px}
+sub,sup{font-size:.72em}
+.q figure img{cursor:zoom-in}
 .explain{white-space:pre-wrap;color:#333a44;font-size:15px}
 .tags{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
 .tag{font-size:12px;background:#f0f2f5;color:#4a5563;border-radius:999px;padding:2px 10px}
@@ -106,6 +113,14 @@ document.addEventListener('DOMContentLoaded',initSearch);
 
 def esc(text: str) -> str:
     return html.escape(text or "", quote=True)
+
+
+def fmt_math(text: str) -> str:
+    """先转义，再把 _{...} / ^{...} 变成真正的上下标。"""
+    out = esc(text)
+    out = re.sub(r"\^\{([^{}]{1,40})\}", r"<sup>\1</sup>", out)
+    out = re.sub(r"_\{([^{}]{1,40})\}", r"<sub>\1</sub>", out)
+    return out
 
 
 def tag_slug(tag: str) -> str:
@@ -171,7 +186,7 @@ def question_html(q: dict, depth: int, slug: str) -> str:
         ' target="_blank">查看原文</a>'
     )
     parts.append('<div class="q-head">' + "".join(head) + "</div>")
-    parts.append(f'<div class="stem">{esc(q["stem"])}</div>')
+    parts.append(f'<div class="stem">{fmt_math(q["stem"])}</div>')
     for i, fig in enumerate(q.get("figures", [])):
         parts.append(
             f'<figure><img src="{rel}{fig}" alt="第 {q["number"]} 题配图 {i + 1}" loading="lazy">'
@@ -182,15 +197,24 @@ def question_html(q: dict, depth: int, slug: str) -> str:
         for opt in q["options"]:
             parts.append(
                 f'<li><span class="lab">{esc(opt["label"])}</span>'
-                f'<span>{esc(opt["text"]) or "（见图）"}</span></li>'
+                f'<span>{fmt_math(opt["text"]) or "（见图）"}</span></li>'
             )
         parts.append("</ul>")
-    if q.get("answer") or q.get("explanation"):
-        parts.append(
-            "<details><summary>查看答案与解析</summary>"
-            f'<div class="answer"><b>正确答案：{esc(q.get("answer") or "见解析")}</b>'
-            f'<div class="explain">{esc(q.get("explanation") or "")}</div></div></details>'
-        )
+    if q.get("answer") or q.get("explanation") or q.get("answer_imgs"):
+        parts.append("<details><summary>查看答案与解析</summary><div class=\"answer\">")
+        parts.append(f'<b>正确答案：{fmt_math(q.get("answer") or "见解析")}</b>')
+        for i, img in enumerate(q.get("answer_imgs", [])):
+            parts.append(
+                f'<figure class="ans-src"><img src="{rel}{img}" alt="解析原图 {i + 1}" loading="lazy">'
+                f'<figcaption>原卷解析（{i + 1}/{len(q["answer_imgs"])}）'
+                "· 排版复杂的公式以原图为准</figcaption></figure>"
+            )
+        if q.get("explanation"):
+            parts.append(
+                "<details class=\"text-ver\"><summary>文字版（供复制与检索，公式可能不完整）</summary>"
+                f'<div class="explain">{fmt_math(q.get("explanation"))}</div></details>'
+            )
+        parts.append("</div></details>")
     if q.get("tags"):
         parts.append('<div class="tags">')
         for tag in q["tags"]:
@@ -228,6 +252,33 @@ def band_crop(site_dir: Path, paper: dict, q: dict) -> str | None:
     return out_rel
 
 
+def answer_crop(site_dir: Path, paper: dict, q: dict, idx: int, block: dict) -> str | None:
+    """把解析在版面上的原始排版裁出来——分式、上下标、上划线只有原图才看得清。"""
+    size = paper.get("page_size") or {}
+    pw = size.get("width")
+    if not pw:
+        return None
+    src = site_dir / "assets" / "pages" / paper["slug"] / f"p{int(block['page']):02d}.png"
+    if not src.exists():
+        return None
+    out_rel = f"assets/figs/{paper['slug']}/q{q['number']:02d}-ans{idx}.png"
+    out = site_dir / out_rel
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if out.exists():
+        return out_rel
+    try:
+        im = Image.open(src)
+        scale = im.width / float(pw)
+        top = max(0, int((block["top"] - 8) * scale))
+        bottom = min(im.height, int((block["bottom"] + 8) * scale))
+        if bottom - top < 30:
+            return None
+        im.convert("L").crop((0, top, im.width, bottom)).save(out, optimize=True)
+    except Exception:
+        return None
+    return out_rel
+
+
 def build(data_dir: Path, site_dir: Path) -> dict:
     q_dir = data_dir / "questions"
     all_papers = []
@@ -258,6 +309,13 @@ def build(data_dir: Path, site_dir: Path) -> dict:
                     band = band_crop(site_dir, paper, q)
                     if band:
                         q["figures"] = [band]
+        for q in paper["questions"]:
+            imgs = []
+            for i, block in enumerate(q.get("answer_blocks", []), start=1):
+                rel_img = answer_crop(site_dir, paper, q, i, block)
+                if rel_img:
+                    imgs.append(rel_img)
+            q["answer_imgs"] = imgs
         body = [f"<h1>{esc(title)}</h1>"]
         body.append(
             f'<p class="sub">共 {stats.get("total", 0)} 题 · '

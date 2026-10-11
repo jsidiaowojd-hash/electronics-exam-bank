@@ -141,9 +141,149 @@ def strip_ads(text: str) -> str:
     return text
 
 
+# ---------------------------------------------------------------- 公式字符修复
+
+# Word/WPS 用 Symbol 字体排版公式时，字符会落在 Unicode 私用区（U+F0xx），
+# 浏览器没有对应字形就显示成方框。这里按 Adobe Symbol 编码表还原成真正的符号。
+SYMBOL_TABLE = {
+    0x20: " ", 0x21: "!", 0x22: "∀", 0x23: "#", 0x24: "∃", 0x25: "%", 0x26: "&",
+    0x27: "∋", 0x28: "(", 0x29: ")", 0x2A: "∗", 0x2B: "+", 0x2C: ",", 0x2D: "−",
+    0x2E: ".", 0x2F: "/", 0x3A: ":", 0x3B: ";", 0x3C: "<", 0x3D: "=", 0x3E: ">",
+    0x3F: "?", 0x40: "≅", 0x41: "Α", 0x42: "Β", 0x43: "Χ", 0x44: "Δ", 0x45: "Ε",
+    0x46: "Φ", 0x47: "Γ", 0x48: "Η", 0x49: "Ι", 0x4A: "ϑ", 0x4B: "Κ", 0x4C: "Λ",
+    0x4D: "Μ", 0x4E: "Ν", 0x4F: "Ο", 0x50: "Π", 0x51: "Θ", 0x52: "Ρ", 0x53: "Σ",
+    0x54: "Τ", 0x55: "Υ", 0x56: "ς", 0x57: "Ω", 0x58: "Ξ", 0x59: "Ψ", 0x5A: "Ζ",
+    0x5B: "[", 0x5C: "∴", 0x5D: "]", 0x5E: "⊥", 0x5F: "_", 0x60: "‾", 0x61: "α",
+    0x62: "β", 0x63: "χ", 0x64: "δ", 0x65: "ε", 0x66: "φ", 0x67: "γ", 0x68: "η",
+    0x69: "ι", 0x6A: "ϕ", 0x6B: "κ", 0x6C: "λ", 0x6D: "μ", 0x6E: "ν", 0x6F: "ο",
+    0x70: "π", 0x71: "θ", 0x72: "ρ", 0x73: "σ", 0x74: "τ", 0x75: "υ", 0x76: "ϖ",
+    0x77: "ω", 0x78: "ξ", 0x79: "ψ", 0x7A: "ζ", 0x7B: "{", 0x7C: "|", 0x7D: "}",
+    0x7E: "∼", 0xA0: "€", 0xA1: "ϒ", 0xA2: "′", 0xA3: "≤", 0xA4: "⁄", 0xA5: "∞",
+    0xA6: "ƒ", 0xA7: "♣", 0xA8: "♦", 0xA9: "♥", 0xAA: "♠", 0xAB: "↔", 0xAC: "←",
+    0xAD: "↑", 0xAE: "→", 0xAF: "↓", 0xB0: "°", 0xB1: "±", 0xB2: "″", 0xB3: "≥",
+    0xB4: "×", 0xB5: "∝", 0xB6: "∂", 0xB7: "•", 0xB8: "÷", 0xB9: "≠", 0xBA: "≡",
+    0xBB: "≈", 0xBC: "…", 0xBD: "│", 0xBE: "⎯", 0xBF: "↵", 0xC0: "ℵ", 0xC1: "ℑ",
+    0xC2: "ℜ", 0xC3: "℘", 0xC4: "⊗", 0xC5: "⊕", 0xC6: "∅", 0xC7: "∩", 0xC8: "∪",
+    0xC9: "⊃", 0xCA: "⊇", 0xCB: "⊄", 0xCC: "⊂", 0xCD: "⊆", 0xCE: "∈", 0xCF: "∉",
+    0xD0: "∠", 0xD1: "∇", 0xD2: "®", 0xD3: "©", 0xD4: "™", 0xD5: "∏", 0xD6: "√",
+    0xD7: "⋅", 0xD8: "¬", 0xD9: "∧", 0xDA: "∨", 0xDB: "⇔", 0xDC: "⇐", 0xDD: "⇑",
+    0xDE: "⇒", 0xDF: "⇓", 0xE0: "◊", 0xE1: "〈", 0xE2: "®", 0xE3: "©", 0xE4: "™",
+    0xE5: "∑", 0xE6: "⎛", 0xE7: "⎜", 0xE8: "⎝", 0xE9: "⎡", 0xEA: "⎢", 0xEB: "⎣",
+    0xEC: "⎧", 0xED: "⎨", 0xEE: "⎩", 0xEF: "⎪", 0xF1: "〉", 0xF2: "∫", 0xF3: "⌠",
+    0xF4: "⎮", 0xF5: "⌡", 0xF6: "⎯", 0xF7: "⎰", 0xF8: "⎱", 0xF9: "⎲", 0xFA: "⎳",
+    0xFB: "│",
+}
+
+
+def fix_formula_text(text: str) -> str:
+    """还原私用区里的数学符号；其他认不出的私用区字符直接丢掉，免得变成方框。"""
+    if not text:
+        return text
+    out = []
+    for ch in text:
+        code = ord(ch)
+        if 0xF000 <= code <= 0xF0FF:
+            out.append(SYMBOL_TABLE.get(code - 0xF000, ""))
+        elif 0xE000 <= code <= 0xF8FF:
+            out.append("")
+        elif ch == "\ufffd":
+            out.append("")
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
 def line_key(text: str) -> str:
     """归一化行文本，用于识别跨页重复的页眉页脚。"""
     return re.sub(r"[\s\d\-—_·．.、:：()（）\[\]]+", "", text)
+
+
+# ---------------------------------------------------------------- 行重建（含上下标）
+
+def _line_from_chars(chars):
+    chars = [c for c in chars if c["_txt"]]
+    if not chars:
+        return None
+    return {
+        "chars": chars,
+        "top": min(c["top"] for c in chars),
+        "bottom": max(c["bottom"] for c in chars),
+        "x0": min(c["x0"] for c in chars),
+        "x1": max(c["x1"] for c in chars),
+        "size": statistics.median([c["size"] for c in chars]),
+        "text": None,
+    }
+
+
+def _looks_like_script(frag, prev) -> bool:
+    """判断这一行是不是上一行的上下标碎片（短、字小、紧贴、横向落在上一行内）。"""
+    if len(frag["chars"]) > 12:
+        return False
+    if frag["size"] > prev["size"] * 0.92:
+        return False
+    gap = frag["top"] - prev["bottom"]
+    if not (-1.1 * prev["size"] <= gap <= 0.5 * prev["size"]):
+        return False
+    return prev["x0"] - 4 <= frag["x0"] <= prev["x1"] + 12
+
+
+def _attach_script(prev, frag) -> None:
+    prev_base = statistics.median([c["bottom"] for c in prev["chars"]])
+    frag_base = statistics.median([c["bottom"] for c in frag["chars"]])
+    kind = "sup" if frag_base < prev_base - 0.8 else "sub"
+    for c in frag["chars"]:
+        c["_script"] = kind
+    prev["chars"] = sorted(prev["chars"] + frag["chars"], key=lambda c: (round(c["x0"], 1)))
+    prev["x1"] = max(prev["x1"], frag["x1"])
+    prev["bottom"] = max(prev["bottom"], frag["bottom"])
+    prev["text"] = None
+
+
+def _render_line(line) -> str:
+    """把字符序列拼成文本：连续的上下标包成 _{...} / ^{...}，便于渲染成 <sub>/<sup>。"""
+    out, run, run_kind = [], [], None
+    for ch in line["chars"]:
+        kind = ch.get("_script")
+        if kind != run_kind:
+            if run:
+                piece = "".join(c["_txt"] for c in run)
+                out.append(f"{'^' if run_kind == 'sup' else '_'}{{{piece}}}" if run_kind else piece)
+            run, run_kind = [], kind
+        run.append(ch)
+    if run:
+        piece = "".join(c["_txt"] for c in run)
+        out.append(f"{'^' if run_kind == 'sup' else '_'}{{{piece}}}" if run_kind else piece)
+    text = "".join(out)
+    # 拉丁字母之间被大间隔分开时补空格，中文之间不补
+    text = re.sub(r"(?<=[A-Za-z0-9)）\]】}])\s{2,}(?=[A-Za-z0-9(（\[【{])", " ", text)
+    return text.strip()
+
+
+def assemble_lines(raw_lines, wm_threshold: float) -> list[dict]:
+    """把 pdfplumber 抽出的行做两步整理：修公式字符 + 把上下标并回主行。"""
+    prepared = []
+    for raw in raw_lines:
+        chars = []
+        for c in raw.get("chars", []):
+            if c["size"] > wm_threshold:
+                continue
+            c = dict(c)
+            c["_txt"] = fix_formula_text(c["text"])
+            chars.append(c)
+        line = _line_from_chars(chars)
+        if line:
+            prepared.append(line)
+
+    merged: list[dict] = []
+    for line in prepared:
+        if merged and _looks_like_script(line, merged[-1]):
+            _attach_script(merged[-1], line)
+            continue
+        merged.append(line)
+
+    for line in merged:
+        line["text"] = fix_formula_text(_render_line(line))
+    return [ln for ln in merged if ln["text"].strip()]
 
 
 def collect_repeated_lines(pages_lines: list[list[str]], doc_pages: int) -> set[str]:
@@ -335,7 +475,7 @@ def ingest_pdf(path: Path, out_root: Path, site_root: Path, do_clean: bool = Tru
             kept = page.filter(
                 lambda o: not (o["object_type"] == "char" and o["size"] > wm_threshold)
             )
-            lines = kept.extract_text_lines() or []
+            lines = assemble_lines(kept.extract_text_lines() or [], wm_threshold)
             raw_lines_per_page.append([l["text"] for l in lines])
             page_records.append(
                 {

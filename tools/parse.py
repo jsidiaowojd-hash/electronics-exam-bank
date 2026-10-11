@@ -133,6 +133,7 @@ def split_questions(paper: dict) -> dict:
     answers_started = False
     answer_buffer: list[str] | None = None
     answer_num: int | None = None
+    answer_marks: list[dict] | None = None
 
     def close(current_q):
         if current_q and (current_q["stem_lines"] or current_q["figures"]):
@@ -204,6 +205,10 @@ def split_questions(paper: dict) -> dict:
                 target["answer"] = raw_answer or None
                 answer_num = num
                 answer_buffer = target["explanation_lines"]
+                answer_marks = target.setdefault("explanation_marks", [])
+                answer_marks.append(
+                    {"page": line["page"], "top": line["top"], "bottom": line["bottom"]}
+                )
             else:
                 answer_buffer, answer_num = None, None
             continue
@@ -211,14 +216,21 @@ def split_questions(paper: dict) -> dict:
         m_exp = EXPLAIN_RE.match(text)
         if answers_started and m_exp and answer_buffer is not None:
             answer_buffer.append(m_exp.group(1).strip())
+            if answer_marks is not None:
+                answer_marks.append({"page": line["page"], "top": line["top"], "bottom": line["bottom"]})
             continue
 
         if answers_started:
             if answer_buffer is not None:
                 if re.fullmatch(r"[-—\s]{6,}", text) or set(text) <= set("-—="):
                     answer_buffer, answer_num = None, None
+                    answer_marks = None
                     continue
                 answer_buffer.append(text)
+                if answer_marks is not None:
+                    answer_marks.append(
+                        {"page": line["page"], "top": line["top"], "bottom": line["bottom"]}
+                    )
             continue
 
         # 题干/选项
@@ -350,6 +362,19 @@ def split_questions(paper: dict) -> dict:
     for q in questions:
         q["explanation"] = "\n".join(q.get("explanation_lines", [])).strip()
         q.pop("explanation_lines", None)
+        # 把解析占据的版面位置合并成连续区块，供建站时裁原图
+        blocks: list[dict] = []
+        for mark in q.get("explanation_marks", []):
+            if (
+                blocks
+                and blocks[-1]["page"] == mark["page"]
+                and mark["top"] - blocks[-1]["bottom"] <= 45
+            ):
+                blocks[-1]["bottom"] = max(blocks[-1]["bottom"], mark["bottom"])
+            else:
+                blocks.append({"page": mark["page"], "top": mark["top"], "bottom": mark["bottom"]})
+        q["answer_blocks"] = blocks
+        q.pop("explanation_marks", None)
     return {"questions": questions, "explanations": explanations}
 
 
@@ -394,6 +419,7 @@ def finalize(paper: dict, parsed: dict) -> dict:
             "figures": q["figures"],
             "answer": strip_ads(q["answer"] or "").strip() or None,
             "explanation": explanation,
+            "answer_blocks": q.get("answer_blocks", []),
             "tags": tags,
             "page": q["page"],
             "y_top": q.get("y_top"),
