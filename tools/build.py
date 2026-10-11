@@ -340,6 +340,50 @@ def _quiz_ld(paper: dict, q: dict) -> dict:
     return ld
 
 
+def md_to_html(text: str) -> str:
+    """把选题索引这份结构简单的 Markdown 转成 HTML（只用到标题、列表、链接）。"""
+    out, in_list = [], False
+    for raw in text.splitlines():
+        line = raw.rstrip()
+        if not line.strip():
+            continue
+        if line.startswith("### "):
+            if in_list:
+                out.append("</ul>")
+                in_list = False
+            out.append(f"<h3>{esc(line[4:])}</h3>")
+        elif line.startswith("## "):
+            if in_list:
+                out.append("</ul>")
+                in_list = False
+            out.append(f"<h2>{esc(line[3:])}</h2>")
+        elif line.startswith("# "):
+            if in_list:
+                out.append("</ul>")
+                in_list = False
+            out.append(f"<h1>{esc(line[2:])}</h1>")
+        elif line.startswith("- "):
+            if not in_list:
+                out.append('<ul class="idx">')
+                in_list = True
+            item = esc(line[2:])
+            item = re.sub(
+                r"(https?://[^\s<]+)",
+                r'<a href="\1">\1</a>',
+                item,
+            )
+            item = item.replace("**", "")
+            out.append(f"<li>{item}</li>")
+        else:
+            if in_list:
+                out.append("</ul>")
+                in_list = False
+            out.append(f"<p>{esc(line)}</p>")
+    if in_list:
+        out.append("</ul>")
+    return "\n".join(out)
+
+
 def band_crop(site_dir: Path, paper: dict, q: dict) -> str | None:
     """扫描版试卷：按题目在版面上的纵向范围从整页图里裁出原文图。"""
     size = paper.get("page_size") or {}
@@ -767,6 +811,13 @@ def build(data_dir: Path, site_dir: Path) -> dict:
             )
         idx_md.append("")
     (site_dir / "question-index.md").write_text("\n".join(idx_md), encoding="utf-8")
+    # 有的抓取工具只认 text/plain 或 text/html，.md 会被当成"不支持的内容类型"拒掉，
+    # 所以同样内容再给一份 .txt 和一份 .html
+    index_text = "\n".join(idx_md)
+    (site_dir / "question-index.txt").write_text(index_text, encoding="utf-8")
+    (site_dir / "question-index.html").write_text(
+        render_layout("选题索引", md_to_html(index_text), 0), encoding="utf-8"
+    )
     # JSON 版按题目去重（一道题带多个标签时会在多个分组里出现，JSON 里只留一条）
     seen_ids: set[str] = set()
     deduped = [it for it in idx_json if not (it["id"] in seen_ids or seen_ids.add(it["id"]))]
@@ -801,6 +852,9 @@ def build(data_dir: Path, site_dir: Path) -> dict:
              "## 想让模型帮你挑题时先读这个", "",
              f"- 选题索引（只有题干要点+知识点，不含答案解析，最省 token）：{SITE_URL}/question-index.md",
              f"- 同上的 JSON 版本：{SITE_URL}/api/question-index.json", "",
+             "  ⚠️ 有些抓取工具不认 text/markdown，读不了上面那个 .md；那就用这两份同内容的：",
+             f"  · 纯文本：{SITE_URL}/question-index.txt （Content-Type: text/plain）",
+             f"  · 网页版：{SITE_URL}/question-index.html （Content-Type: text/html）", "",
              "## 单题地址（AI 引用用这个）", "",
              f"- 每题一个稳定地址：{SITE_URL}/question/<question_id>.html",
              "  · 例：https://jsidiaowojd-hash.github.io/electronics-exam-bank/question/zsu-885-2024-p1-q11.html",
@@ -831,7 +885,12 @@ def build(data_dir: Path, site_dir: Path) -> dict:
     (site_dir / "llms-full.txt").write_text("\n".join(full), encoding="utf-8")
 
     urls = ["index.html", "search/index.html", "llms.txt", "llms-full.txt", "api/papers.json"]
-    urls += ["question-index.md", "api/question-index.json"]
+    urls += [
+        "question-index.md",
+        "question-index.txt",
+        "question-index.html",
+        "api/question-index.json",
+    ]
     urls += [f"paper/{p['slug']}/index.html" for p in papers]
     urls += [f"paper/{p['slug']}/index.html" for p in browse_only]
     urls += [f"question/{q['id']}.html" for p in papers for q in p["questions"]]
