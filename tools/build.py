@@ -230,13 +230,16 @@ def band_crop(site_dir: Path, paper: dict, q: dict) -> str | None:
 
 def build(data_dir: Path, site_dir: Path) -> dict:
     q_dir = data_dir / "questions"
-    papers = []
+    all_papers = []
     for path in sorted(q_dir.glob("*.json")):
         if path.name == "index.json":
             continue
-        papers.append(json.loads(path.read_text(encoding="utf-8")))
+        all_papers.append(json.loads(path.read_text(encoding="utf-8")))
+    all_papers.sort(key=lambda p: (-(p.get("year") or 0), p.get("slug", "")))
+    # 切出题目的卷子正常建站；纯扫描件（0 题）只做「原卷逐页翻阅」页
+    papers = [p for p in all_papers if p.get("stats", {}).get("total", 0) > 0]
+    browse_only = [p for p in all_papers if p.get("stats", {}).get("total", 0) == 0]
     papers.sort(key=lambda p: (-(p.get("year") or 0), p.get("slug", "")))
-
     (site_dir / "assets").mkdir(parents=True, exist_ok=True)
     (site_dir / "assets" / "style.css").write_text(CSS.strip(), encoding="utf-8")
     (site_dir / "assets" / "app.js").write_text(JS.strip(), encoding="utf-8")
@@ -304,6 +307,34 @@ def build(data_dir: Path, site_dir: Path) -> dict:
             f'原卷 {paper.get("page_count", 0)} 页</div></a>'
         )
 
+    # ---------- 纯扫描件：原卷逐页翻阅 ----------
+    browse_cards = []
+    for paper in browse_only:
+        slug = paper["slug"]
+        title = paper_title(paper)
+        pages = []
+        for n in range(1, int(paper.get("page_count") or 0) + 1):
+            rel_img = f"assets/pages/{slug}/p{n:02d}.png"
+            if (site_dir / rel_img).exists():
+                pages.append(
+                    f'<figure><img src="../../{rel_img}" alt="第 {n} 页" loading="lazy">'
+                    f'<figcaption>第 {n} 页</figcaption></figure>'
+                )
+        body = [
+            f"<h1>{esc(title)}</h1>",
+            '<p class="sub">这份 PDF 整页是扫描图、没有文字层，暂时切不出题目，'
+            "先按原卷逐页翻阅（已自动去掉水印）。</p>",
+            "".join(pages) or '<p class="sub">原卷图片缺失。</p>',
+        ]
+        (site_dir / "paper" / slug).mkdir(parents=True, exist_ok=True)
+        (site_dir / "paper" / slug / "index.html").write_text(
+            render_layout(title, "\n".join(body), 2), encoding="utf-8"
+        )
+        browse_cards.append(
+            f'<a class="card" href="paper/{slug}/index.html"><h3>{esc(title)}</h3>'
+            f'<div class="meta">扫描件 · 原卷 {paper.get("page_count", 0)} 页 · 暂未切题</div></a>'
+        )
+
     # ---------- 知识点页 ----------
     for tag, entries in sorted(tag_map.items()):
         body = [f"<h1>知识点：{esc(tag)}</h1>",
@@ -333,6 +364,13 @@ def build(data_dir: Path, site_dir: Path) -> dict:
         "<h2>按试卷浏览</h2>",
         '<div class="grid">' + "".join(cards) + "</div>",
     ]
+    if browse_cards:
+        body.append("<h2>只有原卷、暂未切题（扫描件）</h2>")
+        body.append(
+            f'<p class="sub">下面 {len(browse_cards)} 份 PDF 整页是扫描图、没有文字层，'
+            "目前提供去水印后的原卷逐页翻阅；想要题目化，需要先做 OCR。</p>"
+        )
+        body.append('<div class="grid">' + "".join(browse_cards) + "</div>")
     if tag_map:
         tops = sorted(tag_map.items(), key=lambda kv: -len(kv[1]))[:24]
         body.append("<h2>常考知识点</h2>")
@@ -419,6 +457,14 @@ def build(data_dir: Path, site_dir: Path) -> dict:
             f"- [{p['title']}]({p['url']}) · {p['questions']} 题 / 答案 {p['with_answer']} · "
             f"JSON: {p['json']}"
         )
+    if browse_only:
+        llms += ["", "## 只有原卷（扫描件，暂未切题）", ""]
+        for p in browse_only:
+            llms.append(
+                f"- {p.get('school') or '未标注学校'} {p.get('code') or ''} "
+                f"{p.get('year') or ''} · 原卷 {p.get('page_count', 0)} 页 · "
+                f"{SITE_URL}/paper/{p['slug']}/index.html"
+            )
     llms += ["", "## 机器可读接口", "",
              f"- 全部题目: {SITE_URL}/api/questions.json",
              f"- 试卷清单: {SITE_URL}/api/papers.json",
@@ -450,6 +496,7 @@ def build(data_dir: Path, site_dir: Path) -> dict:
 
     urls = ["index.html", "search/index.html", "llms.txt", "llms-full.txt", "api/papers.json"]
     urls += [f"paper/{p['slug']}/index.html" for p in papers]
+    urls += [f"paper/{p['slug']}/index.html" for p in browse_only]
     urls += [f"tag/{tag_slug(t)}/index.html" for t in tag_map]
     sitemap = ['<?xml version="1.0" encoding="UTF-8"?>',
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
