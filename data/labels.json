@@ -1,4 +1,4 @@
-﻿{
+{
     "version":  "1.0",
     "school":  "中山大学",
     "exam_code":  "885",
@@ -421,7 +421,7 @@
                        "slug":  "885-22-62fe89c0e677",
                        "page_count":  18,
                        "paper_url":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/index.html",
-                       "status":  "部分确认",
+                       "status":  "已确认",
                        "questions":  [
                                          {
                                              "no":  "一T1",
@@ -616,9 +616,143 @@
                                              "difficulty":  "困难",
                                              "page":  4,
                                              "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-004.jpg"
+                                         },
+                                         {
+                                             "no":  "三T1",
+                                             "subject":  "数字电路",
+                                             "chapter":  "数制与编码",
+                                             "tags":  [
+                                                          "8421BCD 码",
+                                                          "十进制转二进制"
+                                                      ],
+                                             "difficulty":  "简单",
+                                             "page":  5,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-005.jpg"
+                                         },
+                                         {
+                                             "no":  "三T2",
+                                             "subject":  "数字电路",
+                                             "chapter":  "AD/DA",
+                                             "tags":  [
+                                                          "分辨率",
+                                                          "量化位数",
+                                                          "1/1000"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  5,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-005.jpg"
+                                         },
+                                         {
+                                             "no":  "三T3",
+                                             "subject":  "数字电路",
+                                             "chapter":  "时序逻辑",
+                                             "tags":  [
+                                                          "计数器级联",
+                                                          "四进制",
+                                                          "五进制",
+                                                          "模数计算"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  5,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-005.jpg"
+                                         },
+                                         {
+                                             "no":  "三T4",
+                                             "subject":  "数字电路",
+                                             "chapter":  "AD/DA",
+                                             "tags":  [
+                                                          "权电阻网络 D/A 转换器",
+                                                          "权电阻缺点"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  5,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-005.jpg"
+                                         },
+                                         {
+                                             "no":  "三T5",
+                                             "subject":  "数字电路",
+                                             "chapter":  "组合逻辑",
+                                             "tags":  [
+                                                          "竞争冒险",
+                                                          "消除方法",
+                                                          "选通脉冲"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  5,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-005.jpg"
+                                         },
+                                         {
+                                             "no":  "四T1",
+                                             "subject":  "数字电路",
+                                             "chapter":  "逻辑代数",
+                                             "tags":  [
+                                                          "逻辑函数化简",
+                                                          "最小项",
+                                                          "任意项",
+                                                          "最简与或式"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  5,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-005.jpg"
+                                         },
+                                         {
+                                             "no":  "四T2",
+                                             "subject":  "数字电路",
+                                             "chapter":  "组合逻辑",
+                                             "tags":  [
+                                                          "与非门电路",
+                                                          "真值表",
+                                                          "逻辑功能描述"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  6,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-006.jpg"
+                                         },
+                                         {
+                                             "no":  "四T3",
+                                             "subject":  "数字电路",
+                                             "chapter":  "触发器",
+                                             "tags":  [
+                                                          "基本 RS 触发器",
+                                                          "门控触发器",
+                                                          "真值表",
+                                                          "逻辑表达式"
+                                                      ],
+                                             "difficulty":  "中等",
+                                             "page":  6,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-006.jpg"
+                                         },
+                                         {
+                                             "no":  "四T4",
+                                             "subject":  "数字电路",
+                                             "chapter":  "时序逻辑",
+                                             "tags":  [
+                                                          "JK 同步计数器",
+                                                          "状态转换表",
+                                                          "状态转换图",
+                                                          "时序逻辑分析"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  7,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-007.jpg"
+                                         },
+                                         {
+                                             "no":  "四T5",
+                                             "subject":  "数字电路",
+                                             "chapter":  "AD/DA",
+                                             "tags":  [
+                                                          "倒 T 型电阻网络",
+                                                          "D/A 转换器",
+                                                          "输出电压"
+                                                      ],
+                                             "difficulty":  "困难",
+                                             "page":  7,
+                                             "link":  "https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-22-62fe89c0e677/page-007.jpg"
                                          }
                                      ],
-                       "note":  "已确认并标注模电第一部分全部 15 题（选择 10 + 解答 5，第 1-4 页）；数字部分（约第 5-6 页）待读补齐。"
+                       "note":  "已标注全部 25 题（选择 10 + 简答 5 + 综合 10）。题面第 1-7 页，第 8 页起为答案解析。",
+                       "question_pages":  "1-7",
+                       "answer_pages":  "8-18"
                    },
                    {
                        "id":  "sysu-885-2023",
@@ -652,3 +786,4 @@
                    }
                ]
 }
+
