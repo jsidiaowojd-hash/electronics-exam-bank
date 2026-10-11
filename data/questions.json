@@ -1,5 +1,94 @@
 {
   "version": "1.0",
-  "description": "885电子技术真题章节索引。题目图片来源于原PDF，逐题标注学校、年份、章节和考点。",
-  "questions": []
+  "description": "885 电子技术题目级索引。题目图片来源于原 PDF，逐题标注学校、年份、章节和考点；无法确定的一律 status=\"待人工确认\"，不强行归类。",
+  "taxonomy_ref": "data/taxonomy.json",
+  "difficulty_levels": ["简单", "中等", "困难"],
+  "status_values": ["已确认", "待人工确认"],
+  "schema": {
+    "id": "全局唯一，建议 <school>-<year>-<exam>-q<NN>",
+    "school": "学校",
+    "year": "年份（整数）",
+    "exam": "科目代码或名称",
+    "subject": "模拟电路 / 数字电路",
+    "chapter": "章节，取自 taxonomy.json 的 chapters[].name",
+    "topics": ["具体考点，取自 taxonomy.json 的 chapters[].topics[]，可多项"],
+    "difficulty": "简单 / 中等 / 困难",
+    "source_file": "原 PDF 相对路径（不改动、不复制）",
+    "page": "原 PDF 页码（整数，1 起）",
+    "image": "原题图片路径；按页方案下指向 PDF 对应页渲染图",
+    "status": "已确认 / 待人工确认"
+  },
+  "current_state": {
+    "indexed_scope": "中山大学 885（其余院校暂不索引，保留现状）",
+    "papers_scope": [
+      "sysu-885-2021",
+      "sysu-885-2022",
+      "sysu-885-2023",
+      "sysu-885-2024"
+    ],
+    "questions_classified": 0,
+    "blocked_reason": "建立“题目级索引”需要先看到 PDF 的实际内容（判断文字版/扫描版、题目与答案分界页、每页题目范围）。当前执行环境（本地沙箱）故障，无法读取 PDF 内容，因此暂不生成逐题记录，避免违反“不假设文件格式、不确定就标注”的原则。"
+  },
+  "questions": [
+    {
+      "id": "sysu-885-2021-paper",
+      "level": "paper",
+      "school": "中山大学",
+      "year": 2021,
+      "exam": "885 电子技术",
+      "subject": null,
+      "chapter": null,
+      "topics": [],
+      "difficulty": null,
+      "source_file": "中大885电子技术21年真题及答案解析-星星哥原创(1).pdf",
+      "page": null,
+      "image": null,
+      "status": "待人工确认"
+    },
+    {
+      "id": "sysu-885-2022-paper",
+      "level": "paper",
+      "school": "中山大学",
+      "year": 2022,
+      "exam": "885 电子技术",
+      "subject": null,
+      "chapter": null,
+      "topics": [],
+      "difficulty": null,
+      "source_file": "中大885电子技术22年真题及答案解析-星星哥原创.pdf",
+      "page": null,
+      "image": null,
+      "status": "待人工确认"
+    },
+    {
+      "id": "sysu-885-2023-paper",
+      "level": "paper",
+      "school": "中山大学",
+      "year": 2023,
+      "exam": "885 电子技术",
+      "subject": null,
+      "chapter": null,
+      "topics": [],
+      "difficulty": null,
+      "source_file": "23年 885回忆版.pdf",
+      "page": null,
+      "image": null,
+      "status": "待人工确认"
+    },
+    {
+      "id": "sysu-885-2024-paper",
+      "level": "paper",
+      "school": "中山大学",
+      "year": 2024,
+      "exam": "885 电子技术",
+      "subject": null,
+      "chapter": null,
+      "topics": [],
+      "difficulty": null,
+      "source_file": "中大885电子技术24年真题及答案解析-星星哥原创.pdf",
+      "page": null,
+      "image": null,
+      "status": "待人工确认"
+    }
+  ]
 }

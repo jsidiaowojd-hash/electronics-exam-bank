@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中山大学 885 · 题目知识点索引</title>
+<style>
+body{margin:0;background:#f6f8fb;color:#1e293b;font:16px/1.7 -apple-system,BlinkMacSystemFont,"Microsoft Yahei",sans-serif}
+header{background:#1d4ed8;color:#fff;padding:22px 20px}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:13px;opacity:.9}
+main{max-width:980px;margin:20px auto;padding:0 16px}
+.hint{background:#fff7e6;border-left:4px solid #dba51e;padding:10px 14px;border-radius:6px;font-size:14px;margin-bottom:16px}
+.q{background:#fff;border:1px solid #e1e7f0;border-radius:10px;padding:12px 16px;margin:10px 0}
+.q .top{font-weight:700;color:#163968}
+.q .tags{margin:6px 0}
+.tag{display:inline-block;font-size:12px;background:#eef4ff;color:#315ba3;border-radius:5px;padding:2px 8px;margin:3px 4px 0 0}
+.q a{color:#1d4ed8;font-size:13px;text-decoration:none}
+.q a:hover{text-decoration:underline}
+.muted{color:#64748b;font-size:13px}
+.pending{background:#fff3f3;border-left:4px solid #e06c6c;padding:12px 16px;border-radius:6px;margin:12px 0}
+</style>
+</head>
+<body>
+<header>
+<h1>中山大学 885 · 题目知识点索引</h1>
+<p>按考点查题 · 点击链接直接打开原题画面（本页与 data/labels.json 内容同步）</p>
+</header>
+<main>
+<div class="hint">用法：在下面搜索框输入考点（如“差分放大”“卡诺图”“555”“译码器”），即可筛出对应题目。每道题都给出可直接打开的原题页面链接。</div>
+<input id="q" placeholder="输入考点关键词，如：差分放大 / 卡诺图 / 触发器 / 译码器" style="width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;margin-bottom:14px">
+<div id="list"></div>
+</main>
+<script>
+const DATA = {"count":25,"questions":[
+{"no":"一T1","subject":"模拟电路","chapter":"半导体基础","tags":["场效应管","三极管","电压控制","电流控制"],"difficulty":"简单","year":2021,"page":1,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg"},
+{"no":"一T2","subject":"模拟电路","chapter":"运算电路","tags":["正弦波振荡","起振条件"],"difficulty":"中等","year":2021,"page":1,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg"},
+{"no":"一T3","subject":"模拟电路","chapter":"集成运算放大电路","tags":["直流稳压电源","整流","滤波","稳压"],"difficulty":"简单","year":2021,"page":1,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg"},
+{"no":"一T4","subject":"模拟电路","chapter":"集成运算放大电路","tags":["差分放大","温漂","集成运放"],"difficulty":"简单","year":2021,"page":1,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg"},
+{"no":"一T5","subject":"模拟电路","chapter":"频率响应","tags":["频率响应","幅频特性","测试方法"],"difficulty":"中等","year":2021,"page":1,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-001.jpg"},
+{"no":"一T6","subject":"模拟电路","chapter":"三极管","tags":["三极管类型判断","PNP","NPN","电极电位"],"difficulty":"中等","year":2021,"page":2,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg"},
+{"no":"一T7","subject":"模拟电路","chapter":"多级放大电路","tags":["多级放大","总增益","增益相乘"],"difficulty":"简单","year":2021,"page":2,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg"},
+{"no":"一T8","subject":"模拟电路","chapter":"频率响应","tags":["两级放大","波特图","增益分贝"],"difficulty":"困难","year":2021,"page":2,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg"},
+{"no":"一T9","subject":"模拟电路","chapter":"运算电路","tags":["积分运算","方波转三角波","波形变换"],"difficulty":"中等","year":2021,"page":2,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg"},
+{"no":"一T10","subject":"模拟电路","chapter":"二极管","tags":["桥式整流","滤波电容","二极管断路"],"difficulty":"困难","year":2021,"page":2,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-002.jpg"},
+{"no":"二T1","subject":"模拟电路","chapter":"基本放大电路","tags":["静态工作点","放大倍数","输入输出电阻","β 影响"],"difficulty":"中等","year":2021,"page":3,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-003.jpg"},
+{"no":"二T2","subject":"模拟电路","chapter":"三极管","tags":["复合管","复合管类型判断","达林顿"],"difficulty":"中等","year":2021,"page":4,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-004.jpg"},
+{"no":"二T3","subject":"模拟电路","chapter":"运算电路","tags":["加法运算","减法运算","运算关系求解"],"difficulty":"中等","year":2021,"page":5,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-005.jpg"},
+{"no":"二T4","subject":"模拟电路","chapter":"频率响应","tags":["转移函数","波特图","下限截止频率","上限截止频率"],"difficulty":"中等","year":2021,"page":6,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-006.jpg"},
+{"no":"二T5","subject":"模拟电路","chapter":"运算电路","tags":["滞回比较器","电压传输特性","门限电压"],"difficulty":"困难","year":2021,"page":6,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-006.jpg"},
+{"no":"三T1","subject":"数字电路","chapter":"组合逻辑","tags":["TTL 门电路","逻辑功能实现","与非门"],"difficulty":"中等","year":2021,"page":7,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg"},
+{"no":"三T2","subject":"数字电路","chapter":"AD/DA","tags":["A/D 转换","并行比较","逐次逼近","转换速率"],"difficulty":"简单","year":2021,"page":7,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg"},
+{"no":"三T3","subject":"数字电路","chapter":"触发器","tags":["D 触发器转 T 触发器","异或门"],"difficulty":"中等","year":2021,"page":7,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg"},
+{"no":"三T4","subject":"数字电路","chapter":"时序逻辑","tags":["方波周期扩展","二进制计数器","分频"],"difficulty":"中等","year":2021,"page":7,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg"},
+{"no":"三T5","subject":"数字电路","chapter":"存储器","tags":["存储器容量","地址线","4K×8"],"difficulty":"简单","year":2021,"page":7,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg"},
+{"no":"四T1","subject":"数字电路","chapter":"逻辑代数","tags":["逻辑函数化简","最简与或式"],"difficulty":"中等","year":2021,"page":7,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-007.jpg"},
+{"no":"四T2","subject":"数字电路","chapter":"组合逻辑","tags":["译码器 74LS154","最简与或式","地址选择"],"difficulty":"困难","year":2021,"page":8,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-008.jpg"},
+{"no":"四T3","subject":"数字电路","chapter":"组合逻辑","tags":["三线八线译码器","水位控制","逻辑功能实现"],"difficulty":"困难","year":2021,"page":8,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-008.jpg"},
+{"no":"四T4","subject":"数字电路","chapter":"时序逻辑","tags":["同步计数器","JK 触发器","状态转换图"],"difficulty":"困难","year":2021,"page":9,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-009.jpg"},
+{"no":"四T5","subject":"数字电路","chapter":"触发器","tags":["D 触发器","JK 触发器","状态方程","波形图"],"difficulty":"困难","year":2021,"page":9,"link":"https://jsidiaowojd-hash.github.io/electronics-exam-bank/exams/885-21-1-79ffebc606b2/page-009.jpg"}
+]};
+const list = document.getElementById('list');
+function render(rows){
+  if(!rows.length){ list.innerHTML = '<p class="muted">没有匹配的题目。</p>'; return; }
+  list.innerHTML = rows.map(function(q){
+    return '<div class="q"><div class="top">第 '+q.no+' 题 · '+q.subject+' · '+q.chapter+'</div>'
+      + '<div class="tags">'+ q.tags.map(function(t){return '<span class="tag">'+t+'</span>';}).join('') +'</div>'
+      + '<div class="muted">难度：'+q.difficulty+' · 年份：'+q.year+' · 原卷第 '+q.page+' 页</div>'
+      + '<a href="'+q.link+'" target="_blank" rel="noopener">打开原题页面 →</a></div>';
+  }).join('');
+}
+render(DATA.questions);
+document.getElementById('q').addEventListener('input', function(){
+  const s = this.value.trim().toLowerCase();
+  if(!s){ render(DATA.questions); return; }
+  render(DATA.questions.filter(function(q){
+    const blob = (q.chapter+' '+q.tags.join(' ')+' '+q.subject).toLowerCase();
+    return blob.indexOf(s) > -1;
+  }));
+});
+</script>
+<div class="pending" style="max-width:980px;margin:16px auto;padding:12px 16px">
+<b>说明：</b>当前已完整标注 <b>2021 年（25 题）</b>。2022（18 页）、2023 回忆版（10 页）、2024（26 页）的渲染图已生成、卷级链接可用，逐题标签待补。
+</div>
+</body>
+</html>
