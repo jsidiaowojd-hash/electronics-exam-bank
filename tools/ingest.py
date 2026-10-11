@@ -175,15 +175,32 @@ SYMBOL_TABLE = {
 }
 
 
-def fix_formula_text(text: str) -> str:
-    """还原私用区里的数学符号；其他认不出的私用区字符直接丢掉，免得变成方框。"""
+# 只有这些字体按标准 Symbol 编码表还原；WPS 自造字体（如 KingsoftExtra）不遵循它，
+# 硬套会把字符映射错（例如本该是乘号点却变成 γ）。
+SYMBOL_FONTS = re.compile(r"(Symbol|KingsoftSign|MT-Extra|MathType|Euclid)", re.I)
+EXTRA_TABLES = {
+    "KingsoftExtra": {0x67: "·", 0x65: "×", 0x26: "≠"},
+}
+
+
+def fix_formula_text(text: str, fontname: str = "") -> str:
+    """还原私用区里的数学符号；认不出的私用区字符直接丢掉，免得显示成方框。"""
     if not text:
-        return text
+        return ""
+    short = fontname.split("+")[-1]
+    table = None
+    if SYMBOL_FONTS.search(short):
+        table = SYMBOL_TABLE
+    else:
+        for name, mapping in EXTRA_TABLES.items():
+            if name in short:
+                table = mapping
+                break
     out = []
     for ch in text:
         code = ord(ch)
         if 0xF000 <= code <= 0xF0FF:
-            out.append(SYMBOL_TABLE.get(code - 0xF000, ""))
+            out.append(table.get(code - 0xF000, "") if table else "")
         elif 0xE000 <= code <= 0xF8FF:
             out.append("")
         elif ch == "\ufffd":
@@ -217,12 +234,15 @@ def _line_from_chars(chars):
 
 def _looks_like_script(frag, prev) -> bool:
     """判断这一行是不是上一行的上下标碎片（短、字小、紧贴、横向落在上一行内）。"""
-    if len(frag["chars"]) > 12:
+    if len(frag["chars"]) > 32:
         return False
-    if frag["size"] > prev["size"] * 0.92:
+    if frag["size"] > prev["size"] * 0.85:
+        return False
+    # 下标都是数字/字母，含中文的一律当正文行
+    if any("\u4e00" <= (c["_txt"] or "") <= "\u9fff" for c in frag["chars"]):
         return False
     gap = frag["top"] - prev["bottom"]
-    if not (-1.1 * prev["size"] <= gap <= 0.5 * prev["size"]):
+    if not (-1.2 * prev["size"] <= gap <= 0.8 * prev["size"]):
         return False
     return prev["x0"] - 4 <= frag["x0"] <= prev["x1"] + 12
 
@@ -231,9 +251,26 @@ def _attach_script(prev, frag) -> None:
     prev_base = statistics.median([c["bottom"] for c in prev["chars"]])
     frag_base = statistics.median([c["bottom"] for c in frag["chars"]])
     kind = "sup" if frag_base < prev_base - 0.8 else "sub"
-    for c in frag["chars"]:
-        c["_script"] = kind
-    prev["chars"] = sorted(prev["chars"] + frag["chars"], key=lambda c: (round(c["x0"], 1)))
+    base_chars = sorted(prev["chars"], key=lambda c: c["x0"])
+
+    def center(ch):
+        return (ch["x0"] + ch["x1"]) / 2
+
+    # 下标常常是"整行排在下方、和底字并不对齐"，所以按最近的底字归属，
+    # 而不是只把所有碎字按横坐标排一遍——后者会把下标全堆到行尾。
+    buckets: dict[int, list] = {}
+    for ch in sorted(frag["chars"], key=lambda c: c["x0"]):
+        ch["_script"] = kind
+        # 归属规则：挂在"左侧最近的那个底字"后面——读公式时下标总是紧跟它的底字
+        left = [i for i, b in enumerate(base_chars) if center(b) <= center(ch)]
+        nearest = left[-1] if left else 0
+        buckets.setdefault(nearest, []).append(ch)
+
+    rebuilt = []
+    for i, ch in enumerate(base_chars):
+        rebuilt.append(ch)
+        rebuilt.extend(buckets.get(i, []))
+    prev["chars"] = rebuilt
     prev["x1"] = max(prev["x1"], frag["x1"])
     prev["bottom"] = max(prev["bottom"], frag["bottom"])
     prev["text"] = None
@@ -268,7 +305,7 @@ def assemble_lines(raw_lines, wm_threshold: float) -> list[dict]:
             if c["size"] > wm_threshold:
                 continue
             c = dict(c)
-            c["_txt"] = fix_formula_text(c["text"])
+            c["_txt"] = fix_formula_text(c["text"], c.get("fontname", ""))
             chars.append(c)
         line = _line_from_chars(chars)
         if line:
@@ -276,13 +313,22 @@ def assemble_lines(raw_lines, wm_threshold: float) -> list[dict]:
 
     merged: list[dict] = []
     for line in prepared:
-        if merged and _looks_like_script(line, merged[-1]):
-            _attach_script(merged[-1], line)
+        # 上下标碎片可能被一个短行（如"所以"）隔开，所以往前找几行找一个合适的基准行
+        base = None
+        best_gap = None
+        for cand in reversed(merged[-3:]):
+            if not _looks_like_script(line, cand):
+                continue
+            gap = abs(line["top"] - cand["bottom"])
+            if best_gap is None or gap < best_gap:
+                base, best_gap = cand, gap
+        if base is not None:
+            _attach_script(base, line)
             continue
         merged.append(line)
 
     for line in merged:
-        line["text"] = fix_formula_text(_render_line(line))
+        line["text"] = _render_line(line)
     return [ln for ln in merged if ln["text"].strip()]
 
 

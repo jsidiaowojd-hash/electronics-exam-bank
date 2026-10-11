@@ -329,7 +329,7 @@ def build(data_dir: Path, site_dir: Path) -> dict:
         toc = []
         for q in paper["questions"]:
             num = q["number"]
-            toc.append(f'<div><a href="#q{num}">{num}. {esc(q["stem"][:38])}</a></div>')
+            toc.append(f'<div><a href="#q{num}">{num}. {fmt_math(q["stem"][:38])}</a></div>')
         if toc:
             body.append('<div class="card toc">' + "".join(toc) + "</div>")
         sections_seen = []
@@ -401,7 +401,7 @@ def build(data_dir: Path, site_dir: Path) -> dict:
             body.append(
                 f'<div class="q"><div class="q-head"><span class="q-no">{q["number"]}.</span>'
                 f'<span class="pill gray">{esc(title)}</span></div>'
-                f'<div class="stem">{esc(q["stem"][:200])}</div>'
+                f'<div class="stem">{fmt_math(q["stem"][:200])}</div>'
                 f'<div class="tags"><a class="tag" href="../../paper/{slug}/index.html#q{q["number"]}">'
                 "去原卷看答案</a></div></div>"
             )
