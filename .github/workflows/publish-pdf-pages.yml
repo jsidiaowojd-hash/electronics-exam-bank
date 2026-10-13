@@ -40,6 +40,8 @@ jobs:
         run: |
           python tools/ingest.py --pdf-root . --out build/data --site build/public
           python tools/parse.py --data build/data
+          python tools/calibrate.py --data build/data --site build/public \
+            --calibrations data/calibrations
           python tools/build.py --data build/data --site build/public \
             --site-url "${{ steps.pages.outputs.base_url }}"
 

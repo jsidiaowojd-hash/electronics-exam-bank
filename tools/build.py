@@ -26,6 +26,8 @@ from PIL import Image
 SITE_NAME = "数模电考研真题库"
 SITE_TAGLINE = "模拟电子技术 + 数字电子技术 考研真题、答案与解析"
 SITE_URL = "https://example.com"  # 部署后改成自己的域名，或用 --site-url / SITE_URL 环境变量覆盖
+INDEX_VERSION = "question-index-v2"
+INDEX_UPDATED_AT = "2026-10-13 (Asia/Shanghai)"
 
 
 def q_url(qid: str) -> str:
@@ -59,6 +61,8 @@ h2{font-size:20px;margin:34px 0 12px;padding-left:10px;border-left:4px solid var
 .pill{font-size:12px;padding:1px 9px;border-radius:999px;background:var(--brand-soft);color:#2b4bb5}
 .pill.gray{background:#f0f2f5;color:var(--muted)}
 .pill.warn{background:#fff5e2;color:var(--warn)}
+.pill.reviewed-stem{background:#eef3ff;color:#2b4bb5}
+.pill.reviewed-full{background:#e6f6ec;color:#1a8a5a}
 .stem{white-space:pre-wrap}
 .options{margin:10px 0 0;padding:0;list-style:none}
 .options li{padding:5px 0;display:flex;gap:8px}
@@ -73,6 +77,11 @@ summary{cursor:pointer;color:var(--brand);font-size:14px;font-weight:600}
 .ans-src{margin:12px 0 4px}
 .ans-src img{width:100%;border:1px solid var(--line);border-radius:6px;background:#fff}
 .ans-src figcaption{font-size:12px;color:var(--muted);text-align:left;margin-top:4px}
+.source-question{margin:14px 0}
+.source-question a{display:block}
+.source-question img{width:100%;cursor:zoom-in}
+.source-question figcaption{text-align:left}
+.text-note{margin:10px 0;background:#fff8e6;border:1px solid #f0dca8;border-radius:8px;padding:9px 11px;color:#6a5320;font-size:13px}
 .text-ver{margin-top:10px;border-top:1px dotted var(--line);padding-top:8px}
 .text-ver summary{font-weight:500;color:var(--muted);font-size:13px}
 sub,sup{font-size:.72em}
@@ -225,14 +234,29 @@ def question_html(q: dict, depth: int, slug: str) -> str:
         head.append(f'<span class="pill">{esc(q["section"])}</span>')
     if q.get("part"):
         head.append(f'<span class="pill gray">{esc(q["part"][:22])}</span>')
-    if q.get("confidence") != "high":
-        head.append('<span class="pill warn">待校对</span>')
+    review_status = q.get("review_status") or "未校对"
+    review_class = {
+        "未校对": "warn",
+        "题干已校对": "reviewed-stem",
+        "解析已校对": "reviewed-full",
+    }.get(review_status, "warn")
+    head.append(f'<span class="pill {review_class}">{esc(review_status)}</span>')
     head.append(
         f'<a class="meta" style="margin-left:auto" href="{rel}assets/pages/{slug}/p{q["page"]:02d}.png"'
         ' target="_blank">查看原文</a>'
     )
     parts.append('<div class="q-head">' + "".join(head) + "</div>")
     parts.append(f'<div class="stem">{fmt_math(q["stem"])}</div>')
+    if q.get("text_note"):
+        parts.append(f'<div class="text-note">{esc(q["text_note"])}</div>')
+    for i, source_img in enumerate(q.get("source_images", [])):
+        parts.append(
+            f'<figure class="source-question"><a href="{rel}{source_img}" target="_blank" '
+            f'title="打开原尺寸"><img src="{rel}{source_img}" '
+            f'alt="第 {q["number"]} 题完整原题裁图 {i + 1}" loading="lazy"></a>'
+            f'<figcaption>完整原题裁图（{i + 1}/{len(q["source_images"])}）· 点击放大 · '
+            "公式与异常字符以此图为准</figcaption></figure>"
+        )
     for i, fig in enumerate(q.get("figures", [])):
         parts.append(
             f'<figure><img src="{rel}{fig}" alt="第 {q["number"]} 题配图 {i + 1}" loading="lazy">'
@@ -419,7 +443,7 @@ def answer_crop(site_dir: Path, paper: dict, q: dict, idx: int, block: dict) -> 
     src = site_dir / "assets" / "pages" / paper["slug"] / f"p{int(block['page']):02d}.png"
     if not src.exists():
         return None
-    out_rel = f"assets/figs/{paper['slug']}/q{q['number']:02d}-ans{idx}.png"
+    out_rel = f"assets/answer-source/{q['id']}-ans{idx:02d}.png"
     out = site_dir / out_rel
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
@@ -468,6 +492,8 @@ def build(data_dir: Path, site_dir: Path) -> dict:
                     if band:
                         q["figures"] = [band]
         for q in paper["questions"]:
+            # 校对状态与自动抽取置信度相互独立；未进入人工校准流程的题目一律显式标记。
+            q.setdefault("review_status", "未校对")
             imgs = []
             for i, block in enumerate(q.get("answer_blocks", []), start=1):
                 rel_img = answer_crop(site_dir, paper, q, i, block)
@@ -680,150 +706,89 @@ def build(data_dir: Path, site_dir: Path) -> dict:
         encoding="utf-8",
     )
 
-    # ---------- 选题索引：给"帮我挑题"用的轻量清单（不含答案解析）----------
-    def brief_stem(q: dict, width: int = 88) -> str:
-        s = re.sub(r"\s+", " ", q.get("stem", "")).strip()
-        return s[:width] + ("…" if len(s) > width else "")
+    # ---------- 选题索引：全站每题一行，不含答案或解析正文 ----------
+    def brief_stem(q: dict, width: int = 96) -> str:
+        value = re.sub(r"\s+", " ", q.get("stem", "")).strip()
+        return value[:width] + ("…" if len(value) > width else "")
 
-    idx_json, idx_md = [], [
-        f"# {SITE_NAME} · 选题索引",
+    type_labels = {
+        "choice": "选择题", "calc": "计算题", "calculation": "计算题",
+        "analysis": "分析题", "design": "设计题", "simplification": "化简题",
+    }
+    index_rows: list[dict] = []
+    for paper in papers:
+        title = paper_title(paper)
+        for q in paper["questions"]:
+            answer_available = bool(q.get("answer"))
+            explanation_available = bool(q.get("explanation") or q.get("answer_blocks"))
+            index_rows.append({
+                "id": q["id"],
+                "url": q_url(q["id"]),
+                "paper_url": f"{SITE_URL}/paper/{paper['slug']}/index.html#{q['id']}",
+                "paper": title,
+                "school": paper.get("school") or "未标注学校",
+                "year": paper.get("year"),
+                "subject": q.get("subject") or ("数电" if "第二部分" in (q.get("part") or "") else "模电"),
+                "knowledge_points": q.get("tags", []),
+                "type": type_labels.get(q.get("type"), q.get("section") or q.get("type") or "未标注"),
+                "review_status": q.get("review_status") or "未校对",
+                "answer_available": answer_available,
+                "explanation_available": explanation_available,
+                "has_figure": bool(q.get("figures") or q.get("source_images")),
+                "stem_preview": brief_stem(q),
+                "difficulty": q.get("difficulty"),
+            })
+
+    index_header = [
+        f"{SITE_NAME} · 选题索引",
+        f"版本：{INDEX_VERSION}",
+        f"更新时间：{INDEX_UPDATED_AT}",
+        f"覆盖：{len(papers)} 份试卷，{len(index_rows)} 道题",
+        "说明：本索引不包含答案或解析正文；‘可用’只表示单题页已收录相应内容。",
+        "校对状态仅有三种：未校对 / 题干已校对 / 解析已校对。",
         "",
-        "这份文件只列题干要点、题型与知识点，**不含答案与解析**，用于快速筛选题目；"
-        "确定要看哪几道之后，再打开对应链接取答案。",
-        "",
-        f"共 {len(papers)} 份试卷、{total_q} 道题。",
-        "",
-        "**每道题都带一个稳定的单题地址**，格式："
-        f"{SITE_URL}/question/<question_id>.html，"
-        "例：" + q_url("zsu-885-2024-p1-q11") + " 。"
-        "每行开头方括号里就是它的 question_id，可以直接引用。",
-        "（同一份卷子分「部分」时 ID 里会带 -p1/-p2；用「一、二、三」编号的大题是 -c2 这种。）",
-        "",
-        "难度一栏来自原作者在解析里标注的星号（★多则难），没有标注的写「难度未标注」——"
-        "这种情况可以让模型按题型和题干自己估，但请注明是推测。",
-        "",
-        "## 按知识点分组",
-        "",
+        "题目ID\t绝对单题链接\t学校年份\t科目\t具体知识点\t题型\t校对状态\t答案\t解析\t题干要点",
     ]
-    for tag, entries in sorted(tag_map.items(), key=lambda kv: -len(kv[1])):
-        idx_md.append(f"### {tag}（{len(entries)} 题）")
-        idx_md.append("")
-        for slug, title, q in entries:
-            meta = "，".join(
-                x
-                for x in [
-                    q.get("section") or q.get("type"),
-                    "有答案" if q.get("answer") else "无答案",
-                    f'难度{q["difficulty_stars"]}' if q.get("difficulty_stars") else "难度未标注",
-                ]
-                if x
-            )
-            idx_md.append(
-                f"- [{q['id']}] {title} 第 {q['number']} 题（{meta}）：{brief_stem(q)} → "
-                f"{q_url(q['id'])}"
-            )
-            idx_json.append(
-                {
-                    "id": q["id"],
-                    "paper": title,
-                    "slug": slug,
-                    "number": q["number"],
-                    "type": q.get("type"),
-                    "section": q.get("section"),
-                    "tags": q.get("tags", []),
-                    "has_answer": bool(q.get("answer")),
-                    "has_figure": bool(q.get("figures")),
-                    "stem": brief_stem(q, 160),
-                    "url": q_url(q["id"]),
-                    "paper_url": f"{SITE_URL}/paper/{slug}/index.html#{q['id']}",
-                    "difficulty": q.get("difficulty"),
-                }
-            )
-        idx_md.append("")
-    # 没打上知识点的题也要列出来，否则模型按索引挑题时会漏掉它们
-    tagged_ids = {q["id"] for entries in tag_map.values() for _s, _t, q in entries}
-    leftovers = [q for p in papers for q in p["questions"] if q["id"] not in tagged_ids]
-    if leftovers:
-        idx_md.append(f"### 未标注知识点（{len(leftovers)} 题）")
-        idx_md.append("")
-        for q in leftovers:
-            slug = q.get("slug") or q["id"].split("-q")[0]
-            meta = "，".join(
-                x
-                for x in [
-                    q.get("section") or q.get("type"),
-                    "有答案" if q.get("answer") else "无答案",
-                    f'难度{q["difficulty_stars"]}' if q.get("difficulty_stars") else "难度未标注",
-                ]
-                if x
-            )
-            idx_md.append(
-                f"- [{q['id']}] {q['id'].split('-q')[0]} 第 {q['number']} 题（{meta}）："
-                f"{brief_stem(q)} → {q_url(q['id'])}"
-            )
-            idx_json.append(
-                {
-                    "id": q["id"],
-                    "paper": "",
-                    "slug": slug,
-                    "number": q["number"],
-                    "type": q.get("type"),
-                    "section": q.get("section"),
-                    "tags": [],
-                    "has_answer": bool(q.get("answer")),
-                    "has_figure": bool(q.get("figures")),
-                    "stem": brief_stem(q, 160),
-                    "url": q_url(q["id"]),
-                    "difficulty": q.get("difficulty"),
-                }
-            )
-        idx_md.append("")
-        for slug, title, q in entries:
-            meta = "，".join(
-                x
-                for x in [
-                    q.get("section") or q.get("type"),
-                    "有答案" if q.get("answer") else "无答案",
-                    f'难度{q["difficulty_stars"]}' if q.get("difficulty_stars") else "难度未标注",
-                ]
-                if x
-            )
-            idx_md.append(
-                f"- [{q['id']}] {title} 第 {q['number']} 题（{meta}）：{brief_stem(q)} → "
-                f"{q_url(q['id'])}"
-            )
-            idx_json.append(
-                {
-                    "id": q["id"],
-                    "paper": title,
-                    "slug": slug,
-                    "number": q["number"],
-                    "type": q.get("type"),
-                    "section": q.get("section"),
-                    "tags": q.get("tags", []),
-                    "has_answer": bool(q.get("answer")),
-                    "has_figure": bool(q.get("figures")),
-                    "stem": brief_stem(q, 160),
-                    "url": q_url(q["id"]),
-                    "paper_url": f"{SITE_URL}/paper/{slug}/index.html#{q['id']}",
-                    "difficulty": q.get("difficulty"),
-                }
-            )
-        idx_md.append("")
-    (site_dir / "question-index.md").write_text("\n".join(idx_md), encoding="utf-8")
-    # 有的抓取工具只认 text/plain 或 text/html，.md 会被当成"不支持的内容类型"拒掉，
-    # 所以同样内容再给一份 .txt 和一份 .html
-    index_text = "\n".join(idx_md)
+    index_lines = index_header + [
+        "\t".join([
+            row["id"], row["url"], f'{row["school"]}{row["year"] or "年份未标注"}',
+            row["subject"], "、".join(row["knowledge_points"]) or "未标注",
+            row["type"], row["review_status"],
+            "可用" if row["answer_available"] else "不可用",
+            "可用" if row["explanation_available"] else "不可用",
+            row["stem_preview"].replace("\t", " "),
+        ])
+        for row in index_rows
+    ]
+    index_text = "\n".join(index_lines) + "\n"
+    (site_dir / "选题索引.txt").write_text(index_text, encoding="utf-8")
     (site_dir / "question-index.txt").write_text(index_text, encoding="utf-8")
+
+    index_md = [
+        f"# {SITE_NAME} · 选题索引", "",
+        f"版本：{INDEX_VERSION}", "", f"更新时间：{INDEX_UPDATED_AT}", "",
+        "本索引不包含答案或解析正文。", "",
+    ]
+    for row in index_rows:
+        availability = (
+            f'答案{"可用" if row["answer_available"] else "不可用"}、'
+            f'解析{"可用" if row["explanation_available"] else "不可用"}'
+        )
+        index_md.append(
+            f'- [{row["id"]}] {row["school"]}{row["year"] or ""} · {row["subject"]} · '
+            f'{row["type"]} · {"、".join(row["knowledge_points"]) or "未标注"} · '
+            f'{row["review_status"]} · {availability} → {row["url"]}'
+        )
+    md_text = "\n".join(index_md) + "\n"
+    (site_dir / "question-index.md").write_text(md_text, encoding="utf-8")
     (site_dir / "question-index.html").write_text(
-        render_layout("选题索引", md_to_html(index_text), 0), encoding="utf-8"
+        render_layout("选题索引", md_to_html(md_text), 0), encoding="utf-8"
     )
-    # JSON 版按题目去重（一道题带多个标签时会在多个分组里出现，JSON 里只留一条）
-    seen_ids: set[str] = set()
-    deduped = [it for it in idx_json if not (it["id"] in seen_ids or seen_ids.add(it["id"]))]
     (api / "question-index.json").write_text(
-        json.dumps({"site": SITE_NAME, "count": len(deduped), "questions": deduped},
-                   ensure_ascii=False, indent=1),
+        json.dumps({
+            "site": SITE_NAME, "version": INDEX_VERSION, "updated_at": INDEX_UPDATED_AT,
+            "count": len(index_rows), "questions": index_rows,
+        }, ensure_ascii=False, indent=1),
         encoding="utf-8",
     )
 
@@ -850,7 +815,8 @@ def build(data_dir: Path, site_dir: Path) -> dict:
              f"- 全量纯文本: {SITE_URL}/llms-full.txt",
              f"- 接口定义: {SITE_URL}/openapi.yaml", "",
              "## 想让模型帮你挑题时先读这个", "",
-             f"- 选题索引（只有题干要点+知识点，不含答案解析，最省 token）：{SITE_URL}/question-index.md",
+             f"- 推荐上传/读取的纯文本选题索引（不含答案解析正文）：{SITE_URL}/选题索引.txt",
+             f"- Markdown 版：{SITE_URL}/question-index.md",
              f"- 同上的 JSON 版本：{SITE_URL}/api/question-index.json", "",
              "  ⚠️ 有些抓取工具不认 text/markdown，读不了上面那个 .md；那就用这两份同内容的：",
              f"  · 纯文本：{SITE_URL}/question-index.txt （Content-Type: text/plain）",
@@ -862,9 +828,9 @@ def build(data_dir: Path, site_dir: Path) -> dict:
              "  用「一、二、三」编号的大题标记为 `c<序号>`（例如 `zsu-885-2024-p1-c2` 是中大第一部分第 2 道大题）。",
              "- 单题页里含题干、配图、选项、答案解析和原卷裁图，可直接作为引用来源。", "",
              "## 使用说明", "",
-             "题目 JSON 字段：id / number / part / section / type / stem / options / figures / "
-             "answer / explanation / tags / page / confidence。confidence 为 low 或 medium 表示"
-             "该题由 PDF 自动切分，答案或选项可能有缺漏，回答时请注明。", ""]
+             "题目 JSON 字段：id / number / part / section / subject / type / stem / options / figures / "
+             "source_images / answer / explanation / tags / page / confidence / review_status。",
+             "review_status 是独立人工校对状态：未校对、题干已校对、解析已校对。", ""]
     (site_dir / "llms.txt").write_text("\n".join(llms), encoding="utf-8")
 
     full = [f"# {SITE_NAME} 全量题目", ""]
@@ -888,6 +854,7 @@ def build(data_dir: Path, site_dir: Path) -> dict:
     urls += [
         "question-index.md",
         "question-index.txt",
+        "选题索引.txt",
         "question-index.html",
         "api/question-index.json",
     ]

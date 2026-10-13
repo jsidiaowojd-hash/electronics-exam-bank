@@ -75,9 +75,24 @@ def main() -> None:
         except Exception as exc:
             print(f"  ✗ {name} 解析失败：{exc}")
 
-    for name in ["llms.txt", "llms-full.txt", "sitemap.xml", "robots.txt", "openapi.yaml"]:
+    for name in [
+        "llms.txt", "llms-full.txt", "sitemap.xml", "robots.txt", "openapi.yaml",
+        "选题索引.txt", "question-index.txt", "api/question-index.json",
+    ]:
         fp = site / name
         print(f"  {'✓' if fp.exists() else '✗'} {name}  {fp.stat().st_size / 1024:.0f} KB" if fp.exists() else f"  ✗ 缺失 {name}")
+
+    questions_path = site / "api/questions.json"
+    if questions_path.exists():
+        question_doc = json.loads(questions_path.read_text(encoding="utf-8"))
+        questions = question_doc.get("questions", [])
+        valid_statuses = {"未校对", "题干已校对", "解析已校对"}
+        bad_statuses = [q.get("id", "（无 ID）") for q in questions if q.get("review_status") not in valid_statuses]
+        calibrated = [q for q in questions if q.get("slug") == "zsu-885-2024"]
+        missing_source = [q.get("id", "（无 ID）") for q in calibrated if not q.get("source_images")]
+        print("\n人工校对字段：")
+        print(f"  {'✓' if not bad_statuses else '✗'} {len(questions)} 题均有三态校对字段" if not bad_statuses else f"  ✗ 非法/缺失状态：{', '.join(bad_statuses[:10])}")
+        print(f"  {'✓' if len(calibrated) == 25 and not missing_source else '✗'} 中山大学 885（2024）完整题图：{len(calibrated) - len(missing_source)}/25")
 
 
 if __name__ == "__main__":

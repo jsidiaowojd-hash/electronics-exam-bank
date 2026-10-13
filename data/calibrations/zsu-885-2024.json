@@ -1,0 +1,398 @@
+{
+  "slug": "zsu-885-2024",
+  "version": "zsu-885-2024-calibration-v1",
+  "updated_at": "2026-10-13 (Asia/Shanghai)",
+  "source": "中大885电子技术24年真题及答案解析-星星哥原创.pdf，逐页人工核对",
+  "expected_question_ids": [
+    "zsu-885-2024-p1-q1", "zsu-885-2024-p1-q2", "zsu-885-2024-p1-q3",
+    "zsu-885-2024-p1-q4", "zsu-885-2024-p1-q5", "zsu-885-2024-p1-q6",
+    "zsu-885-2024-p1-q7", "zsu-885-2024-p1-q8", "zsu-885-2024-p1-q9",
+    "zsu-885-2024-p1-q10", "zsu-885-2024-p1-q11", "zsu-885-2024-p1-q12",
+    "zsu-885-2024-p1-q13", "zsu-885-2024-p1-q14", "zsu-885-2024-p1-c2",
+    "zsu-885-2024-p1-c3", "zsu-885-2024-p1-c4", "zsu-885-2024-p1-c5",
+    "zsu-885-2024-p1-c6", "zsu-885-2024-p1-c7", "zsu-885-2024-p2-q1",
+    "zsu-885-2024-p2-q2", "zsu-885-2024-p2-q3", "zsu-885-2024-p2-q4",
+    "zsu-885-2024-p2-q5"
+  ],
+  "questions": [
+    {
+      "id": "zsu-885-2024-p1-q1",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "下列哪个一定不处于放大状态（ ）。",
+        "options": [
+          {"label": "A", "text": "见完整原题裁图中的电路图"},
+          {"label": "B", "text": "见完整原题裁图中的电路图"},
+          {"label": "C", "text": "见完整原题裁图中的电路图"},
+          {"label": "D", "text": "见完整原题裁图中的电路图"}
+        ],
+        "tags": ["半导体器件", "晶体管工作状态"],
+        "text_note": "四个选项均为电路图，文字版不重复猜测图中连接关系；请以完整原题裁图为准。",
+        "answer_blocks": [{"page": 14, "top": 205, "bottom": 290}]
+      },
+      "source_crops": [{"page": 1, "top": 350, "bottom": 765}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q2",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "若场效应管的漏极直流电流由 2 mA 变为 4 mA，其低频跨导 g_m（ ）。",
+        "options": [
+          {"label": "A", "text": "变大"}, {"label": "B", "text": "不变"},
+          {"label": "C", "text": "变小"}, {"label": "D", "text": "不能确定"}
+        ],
+        "tags": ["半导体器件", "场效应管跨导"],
+        "text_note": "公式下标已按原卷转写；如显示差异，以完整原题裁图为准。",
+        "answer_blocks": [{"page": 14, "top": 298, "bottom": 407}]
+      },
+      "source_crops": [{"page": 2, "top": 70, "bottom": 130}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q3",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "已知以下放大电路中 V_CC=12 V，R_C=3 kΩ，并且接上 3 kΩ 的负载，当 U_CEQ=6 V 时，最大不失真输出电压的有效值为（ ）。",
+        "options": [
+          {"label": "A", "text": "1.5 V"}, {"label": "B", "text": "2 V"},
+          {"label": "C", "text": "4 V"}, {"label": "D", "text": "6 V"}
+        ],
+        "tags": ["基本放大电路", "最大不失真输出"],
+        "text_note": "公式下标与电路参数以完整原题裁图为准。",
+        "answer_blocks": [{"page": 14, "top": 414, "bottom": 549}]
+      },
+      "source_crops": [{"page": 2, "top": 132, "bottom": 400}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q4",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "NPN 管组成的共射放大电路，当温度急剧上升时，静态工作点（ ），电路可能发生（ ）失真。",
+        "options": [
+          {"label": "A", "text": "上升；饱和"}, {"label": "B", "text": "下降；饱和"},
+          {"label": "C", "text": "上升；截止"}, {"label": "D", "text": "下降；截止"}
+        ],
+        "tags": ["基本放大电路", "温度稳定性", "非线性失真"],
+        "answer_blocks": [{"page": 14, "top": 552, "bottom": 642}]
+      },
+      "source_crops": [{"page": 2, "top": 397, "bottom": 484}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q5",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "一个电路由两级放大电路组成，要求输入电阻 100～200 kΩ，电压放大倍数大于 100，则第一级采用（ ），第二级采用（ ）。",
+        "options": [
+          {"label": "A", "text": "共源；共射"}, {"label": "B", "text": "共源；共基"},
+          {"label": "C", "text": "共集；共基"}, {"label": "D", "text": "共集；共射"}
+        ],
+        "tags": ["多级放大电路", "输入电阻", "电压增益"],
+        "answer_blocks": [{"page": 14, "top": 640, "bottom": 760}]
+      },
+      "source_crops": [{"page": 2, "top": 482, "bottom": 582}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q6",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "高频时，电压放大倍数下降的原因是由于（ ）。",
+        "options": [
+          {"label": "A", "text": "耦合电容的存在"},
+          {"label": "B", "text": "极间电容和分布电容的存在"},
+          {"label": "C", "text": "半导体二极管的非线性特性"},
+          {"label": "D", "text": "静态工作点不合适"}
+        ],
+        "tags": ["频率响应", "高频特性"],
+        "answer_blocks": [{"page": 15, "top": 68, "bottom": 161}]
+      },
+      "source_crops": [{"page": 2, "top": 580, "bottom": 676}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q7",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "晶体管的 β、r_bb′、C_μ、f_β 均相等，所有电容的容量均相等；静态时所有电路中晶体管的发射极电流 I_EQ 均相等。下列电路中低频特性最差的是（ ）。",
+        "options": [
+          {"label": "A", "text": "见完整原题裁图中的电路图"},
+          {"label": "B", "text": "见完整原题裁图中的电路图"},
+          {"label": "C", "text": "见完整原题裁图中的电路图"},
+          {"label": "D", "text": "见完整原题裁图中的电路图"}
+        ],
+        "figures": [
+          "assets/figs/zsu-885-2024/p03-1.png", "assets/figs/zsu-885-2024/p03-2.png",
+          "assets/figs/zsu-885-2024/p03-3.png", "assets/figs/zsu-885-2024/p03-4.png"
+        ],
+        "tags": ["频率响应", "低频特性", "耦合电容", "旁路电容"],
+        "text_note": "四个选项均为电路图；原自动解析曾漏图，现已按原卷重新归入本题。公式符号以完整原题裁图为准。",
+        "answer_blocks": [{"page": 15, "top": 160, "bottom": 280}]
+      },
+      "source_crops": [
+        {"page": 2, "top": 675, "bottom": 765},
+        {"page": 3, "top": 70, "bottom": 365}
+      ]
+    },
+    {
+      "id": "zsu-885-2024-p1-q8",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "下列说法正确的是（ ）。",
+        "figures": [],
+        "tags": ["反馈放大电路", "反馈基本概念"],
+        "text_note": "原自动解析误收了上一题的四幅电路图，现已移回第 7 题。",
+        "answer_blocks": [{"page": 15, "top": 278, "bottom": 397}]
+      },
+      "source_crops": [{"page": 3, "top": 345, "bottom": 488}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q9",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "整流电路如下图所示，下列说法错误的是（ ）。",
+        "options": [
+          {"label": "A", "text": "图(a)所示为半波整流电路，图(b)是全波整流电路。"},
+          {"label": "B", "text": "若变压器二次电压和负载电阻均相等，则后者输出电流平均值是前者输出电流平均值的 2 倍。"},
+          {"label": "C", "text": "在变压器二次电压和负载电阻相同的情况下，右图整流管平均电流和左图整流管平均电流的比值是 2∶1。"},
+          {"label": "D", "text": "若 U_2 为电源变压器二次电压的有效值，二者均采用电容滤波，则两个电路在空载时的输出电压均为 √2U_2。"}
+        ],
+        "tags": ["直流电源", "整流电路", "电容滤波"],
+        "text_note": "原题跨第 3～4 页；原自动解析把 B、C、D 选项的后半句混进题干，现已按原卷恢复。",
+        "answer_blocks": [{"page": 15, "top": 395, "bottom": 467}]
+      },
+      "source_crops": [
+        {"page": 3, "top": 486, "bottom": 765},
+        {"page": 4, "top": 70, "bottom": 145}
+      ]
+    },
+    {
+      "id": "zsu-885-2024-p1-q10",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "功率放大电路的最大输出功率是在输入电压为正弦波时，输出基本不失真情况下，负载上可能获得的最大（ ）。",
+        "options": [
+          {"label": "A", "text": "交流功率"}, {"label": "B", "text": "直流功率"},
+          {"label": "C", "text": "平均功率"}
+        ],
+        "tags": ["功率放大", "最大输出功率"],
+        "answer_blocks": [{"page": 15, "top": 465, "bottom": 538}]
+      },
+      "source_crops": [{"page": 4, "top": 135, "bottom": 210}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q11",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "已知下图为 RC 桥式振荡电路，确定运放的正负极性为上（ ）、下（ ），并分析如果 R_f 短路时，会出现（ ）的情况。",
+        "tags": ["波形发生", "RC桥式振荡电路"],
+        "text_note": "运放端子与 R_f 下标以完整原题裁图为准。",
+        "answer_blocks": [{"page": 15, "top": 535, "bottom": 632}]
+      },
+      "source_crops": [{"page": 4, "top": 205, "bottom": 458}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q12",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "内阻 R_s 很大的电压源信号，欲使其输出电压与输入成正比，应该引入（ ）反馈。",
+        "tags": ["反馈放大电路", "反馈组态"],
+        "answer_blocks": [{"page": 15, "top": 628, "bottom": 716}]
+      },
+      "source_crops": [{"page": 4, "top": 445, "bottom": 490}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q13",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "下列振荡电路频率最稳定的是（ ）。",
+        "tags": ["波形发生", "正弦波振荡电路", "石英晶体振荡"],
+        "answer_blocks": [
+          {"page": 15, "top": 714, "bottom": 770},
+          {"page": 16, "top": 68, "bottom": 114}
+        ]
+      },
+      "source_crops": [{"page": 4, "top": 480, "bottom": 525}]
+    },
+    {
+      "id": "zsu-885-2024-p1-q14",
+      "patch": {
+        "subject": "模电", "type": "choice", "review_status": "解析已校对",
+        "stem": "电路如下图所示，已知稳压管的稳定电压 U_Z=6 V，晶体管的 U_BE=0.7 V，R_1=R_2=R_3=300 Ω，U_I=24 V。若输出 U_O≈23.3 V，则电路出现（ ）故障；若 U_O≈6 V 且不可调，则电路出现（ ）故障。",
+        "options": [
+          {"label": "A", "text": "R_C 短路；R_2 短路"},
+          {"label": "B", "text": "R_2 短路；T_2 的 b、c 短路"},
+          {"label": "C", "text": "R_C 短路；T_1 的 b、c 短路"},
+          {"label": "D", "text": "R_C 短路；T_2 的 b、c 短路"}
+        ],
+        "tags": ["直流电源", "串联型稳压电路", "故障分析"],
+        "text_note": "器件下标已按原卷转写；以完整原题裁图为准。",
+        "answer_blocks": [{"page": 16, "top": 108, "bottom": 255}]
+      },
+      "source_crops": [{"page": 4, "top": 510, "bottom": 765}]
+    },
+    {
+      "id": "zsu-885-2024-p1-c2",
+      "patch": {
+        "subject": "模电", "type": "calculation", "review_status": "解析已校对",
+        "stem": "二、电路图如下图所示，已知 β=100，r_bb′=30 Ω，V_BE=0.7 V，求：（1）T_3、T_4 的作用；（2）I_CQ1、I_CQ2；（3）差模放大倍数 A_vd。",
+        "answer": "T_3、T_4 构成比例电流源；I_CQ1=I_CQ2≈0.99 mA；A_vd≈−87.41。",
+        "explanation": "已核对解析归属。完整推导、上下标和分式以原卷解析裁图为准。",
+        "tags": ["差分放大电路", "比例电流源", "差模增益"],
+        "text_note": "本题含较多上下标和公式，文字转写用于检索；所有符号以完整原题裁图为准。",
+        "answer_blocks": [
+          {"page": 16, "top": 252, "bottom": 770},
+          {"page": 17, "top": 68, "bottom": 150}
+        ]
+      },
+      "source_crops": [{"page": 5, "top": 70, "bottom": 770}]
+    },
+    {
+      "id": "zsu-885-2024-p1-c3",
+      "patch": {
+        "subject": "模电", "type": "analysis", "review_status": "解析已校对",
+        "stem": "三、通用型运放 F747 的内部结构如下图所示，试分析：（1）偏置电路由哪些元件组成，基准电流约为多少？（2）哪些是放大管，组成几级放大电路，每级各是什么基本电路？（3）T_19、T_20 和 R_8 组成的电路的作用是什么？",
+        "answer": "见解析原图。",
+        "explanation": "已核对为第 3 题解析：偏置电路、三级放大结构及输出级偏置/消除交越失真。器件编号和公式以原卷解析裁图为准。",
+        "tags": ["集成运算放大器", "偏置电路", "互补输出级"],
+        "text_note": "器件编号密集，文字转写仅用于检索；以完整原题裁图为准。",
+        "answer_blocks": [
+          {"page": 17, "top": 145, "bottom": 770},
+          {"page": 18, "top": 68, "bottom": 150}
+        ]
+      },
+      "source_crops": [{"page": 6, "top": 70, "bottom": 770}]
+    },
+    {
+      "id": "zsu-885-2024-p1-c4",
+      "patch": {
+        "subject": "模电", "type": "calculation", "review_status": "解析已校对",
+        "stem": "四、每级放大电路均为共射放大电路，其频率响应如下图所示，回答：（1）电路采用什么耦合方式？是几级放大电路？（2）写出放大倍数 A_u 的方程，并求下限与上限截止频率；（3）f=10 Hz 与 f=10^5 Hz 时的相位偏移分别是多少？",
+        "answer": "阻容耦合、两级；完整传递函数与截止频率、相位计算见解析原图。",
+        "explanation": "已核对解析归属；原解析给出传递函数、f_L≈100 Hz、f_H≈6.43×10^4 Hz，并计算指定频率处相移。",
+        "tags": ["频率响应", "波特图", "截止频率", "相位响应"],
+        "text_note": "本题含传递函数、指数和相位符号；以完整原题裁图与原卷解析裁图为准。",
+        "answer_blocks": [{"page": 18, "top": 145, "bottom": 662}]
+      },
+      "source_crops": [{"page": 7, "top": 70, "bottom": 770}]
+    },
+    {
+      "id": "zsu-885-2024-p1-c5",
+      "patch": {
+        "subject": "模电", "type": "calculation", "review_status": "解析已校对",
+        "stem": "五、电路如下图所示，已知集成运放的最大输出电压幅值为 ±12 V，U_I 的数值在 U_O1 的峰峰值之间。（1）求 U_O3 的占空比和 U_I 的关系式；（2）设 U_I=2.5 V，画出 U_O1、U_O2 和 U_O3 的波形。",
+        "answer": "原解析给出振荡周期 T=20 ms、占空比 q=(6+u_I)/12；波形见解析原图。",
+        "explanation": "已核对解析归属，范围为解析页第 18 页题 5 起至第 20 页题 6 前；不再混入后续题目。",
+        "tags": ["波形发生", "滞回比较器", "积分运算电路", "占空比"],
+        "text_note": "本题含分段波形、上下标和积分关系式；以完整原题裁图与原卷解析裁图为准。",
+        "answer_blocks": [
+          {"page": 18, "top": 660, "bottom": 770},
+          {"page": 19, "top": 68, "bottom": 770},
+          {"page": 20, "top": 68, "bottom": 178}
+        ]
+      },
+      "source_crops": [{"page": 8, "top": 70, "bottom": 770}]
+    },
+    {
+      "id": "zsu-885-2024-p1-c6",
+      "patch": {
+        "subject": "模电", "type": "calculation", "review_status": "解析已校对",
+        "stem": "六、运算电路如下图所示，求 A_u=V_O/(V_i1−V_i2)。",
+        "answer": "A_u=−R_2R_4/(R_1R_3)。",
+        "explanation": "已核对为第 6 题解析；电压跟随器关系与联立推导见原卷解析裁图。",
+        "tags": ["运算放大器", "运算电路", "差分输入"],
+        "text_note": "公式下标与分式以完整原题裁图为准。",
+        "answer_blocks": [{"page": 20, "top": 175, "bottom": 598}]
+      },
+      "source_crops": [{"page": 9, "top": 70, "bottom": 770}]
+    },
+    {
+      "id": "zsu-885-2024-p1-c7",
+      "patch": {
+        "subject": "模电", "type": "analysis", "review_status": "解析已校对",
+        "stem": "七、判断下列各反馈的反馈组态。",
+        "answer": "依次为：电压并联负反馈、电压串联负反馈、电流并联负反馈、电流串联负反馈。",
+        "explanation": "原解析页标题误写为“6、解”，但内容与四幅反馈电路一一对应；已按题目归入本题。",
+        "tags": ["反馈放大电路", "反馈组态"],
+        "text_note": "四幅电路图均属于本题；以完整原题裁图为准。",
+        "answer_blocks": [{"page": 20, "top": 596, "bottom": 735}]
+      },
+      "source_crops": [{"page": 10, "top": 70, "bottom": 770}]
+    },
+    {
+      "id": "zsu-885-2024-p2-q1",
+      "patch": {
+        "subject": "数电", "type": "simplification", "review_status": "解析已校对",
+        "stem": "1、按照要求化简，答案过程清晰。（1）方法不限，化为最简与或式：Y_1=Σm(3,5,6,7,10)+Σd(0,1,2,4,8)；（2）方法不限，化为最简与或式：Y_2=A C̄+A B C̄+A C D̄+C D。",
+        "figures": [],
+        "answer": "见解析原图（逻辑变量上划线以原图为准）。",
+        "explanation": "已核对：本题包含两个化简小问；原自动解析曾把第（2）小问并入第 2 题，现已恢复至本题。",
+        "tags": ["逻辑代数", "逻辑函数化简", "卡诺图", "公式法化简"],
+        "text_note": "本题含上划线、求和符号和无关项符号；字体转写可能与原卷不同，所有逻辑变量以完整原题裁图为准。",
+        "answer_blocks": [{"page": 21, "top": 68, "bottom": 650}]
+      },
+      "source_crops": [{"page": 11, "top": 70, "bottom": 355}]
+    },
+    {
+      "id": "zsu-885-2024-p2-q2",
+      "patch": {
+        "subject": "数电", "type": "design", "review_status": "解析已校对",
+        "stem": "2、设计用 3 个开关控制一个电灯的电路，要求改变任何一个开关的状态都能控制电灯由亮变灭或者由灭变亮，要求用数据选择器实现。",
+        "figures": [],
+        "answer": "按三变量异或功能设计，用 4 选 1 数据选择器实现；具体接线见解析原图。",
+        "explanation": "已核对解析归属：真值表与数据选择器接线均属于本题，不含第 1 题的化简式。",
+        "tags": ["组合逻辑电路", "数据选择器", "逻辑设计", "异或逻辑"],
+        "answer_blocks": [
+          {"page": 21, "top": 648, "bottom": 770},
+          {"page": 22, "top": 68, "bottom": 676}
+        ]
+      },
+      "source_crops": [{"page": 11, "top": 370, "bottom": 448}]
+    },
+    {
+      "id": "zsu-885-2024-p2-q3",
+      "patch": {
+        "subject": "数电", "type": "analysis", "review_status": "解析已校对",
+        "stem": "3、分析下图所示的时序逻辑电路，画出状态转换图并且分析功能，其中 A 为输入变量。",
+        "answer": "A=0 时为可自启动的同步四进制加法计数器；A=1 时为可自启动的同步四进制减法计数器。",
+        "explanation": "已核对解析归属；驱动方程、状态方程、输出方程和状态转换图见原卷解析裁图。",
+        "tags": ["时序逻辑电路", "JK触发器", "状态转换图", "同步计数器"],
+        "text_note": "图中触发器端子、取反符号和状态方程以完整原题裁图、解析裁图为准。",
+        "answer_blocks": [
+          {"page": 22, "top": 674, "bottom": 770},
+          {"page": 23, "top": 68, "bottom": 545}
+        ]
+      },
+      "source_crops": [{"page": 12, "top": 70, "bottom": 378}]
+    },
+    {
+      "id": "zsu-885-2024-p2-q4",
+      "patch": {
+        "subject": "数电", "type": "calculation", "review_status": "解析已校对",
+        "stem": "4、在下图所示的施密特触发电路中，R_1=5 kΩ，R_2=10 kΩ，R_3=33 kΩ，G_1 和 G_2 是 CMOS 反相器；V_DD=5 V，V_OH≈5 V，V_OL≈0 V，阈值电压 V_TH=V_DD/2=2.5 V。求施密特触发器的 V_T+、V_T−、ΔV_T。",
+        "answer": "V_T+=4.1 V，V_T−=3.3 V，ΔV_T=0.8 V。",
+        "explanation": "已核对解析归属；上、下阈值的叠加定理推导见原卷解析裁图。",
+        "tags": ["脉冲波形产生", "施密特触发器", "CMOS反相器", "阈值电压"],
+        "text_note": "本题含多组下标与阈值符号；以完整原题裁图为准。",
+        "answer_blocks": [
+          {"page": 23, "top": 542, "bottom": 770},
+          {"page": 24, "top": 68, "bottom": 568}
+        ]
+      },
+      "source_crops": [{"page": 13, "top": 70, "bottom": 420}]
+    },
+    {
+      "id": "zsu-885-2024-p2-q5",
+      "patch": {
+        "subject": "数电", "type": "calculation", "review_status": "解析已校对",
+        "stem": "5、在 4 位倒 T 型 D/A 转换器中，V_REF=5 V，R_f=R，试求：（1）输入为 0001、0110、1010、1111 时输出 V_O 的大小；（2）输出 V_O=−1.25 V 时输入为多少；（3）若改为 V_REF=−10 V，由 V_REF 误差引起的 V_O 误差要求小于 LSB/2，求 |ΔV_REF|/|V_REF|。",
+        "figures": [],
+        "answer": "（1）−0.3125 V、−1.875 V、−3.125 V、−4.6875 V；（2）0100；（3）|ΔV_REF|/|V_REF|≤1/2^5。",
+        "explanation": "已核对解析归属：解析只到第 25 页题 5 结束；原自动解析误收的第 14～26 页图片及第 26 页课程评价已移除。",
+        "tags": ["AD/DA转换", "倒T型D/A转换器", "转换误差", "参考电压稳定度"],
+        "text_note": "本题含绝对值、下标和分式；以完整原题裁图与原卷解析裁图为准。",
+        "answer_blocks": [
+          {"page": 24, "top": 566, "bottom": 770},
+          {"page": 25, "top": 68, "bottom": 728}
+        ]
+      },
+      "source_crops": [{"page": 13, "top": 450, "bottom": 650}]
+    }
+  ]
+}
